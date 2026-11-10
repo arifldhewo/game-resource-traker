@@ -216,7 +216,7 @@ export interface BasketItem {
 export interface TierResult {
   key: TierKey;
   name: string;
-  rule: string;                 // '$10–$29.99/mo'
+  rule: string;                 // '$5–$30/mo'
   capUsd: number;
   colorToken: string;
 
@@ -576,8 +576,8 @@ export class TierProfile {
 | sort | key | cap_usd | rule | custom packs |
 |---|---|---|---|---|
 | 1 | F2P | 0 | `$0/mo · NATURAL ONLY` | no |
-| 2 | MINNOW | 9.99 | `$0.01–$9.99/mo` | no |
-| 3 | GOLDFISH | 29.99 | `$10–$29.99/mo` | no |
+| 2 | MINNOW | 5 | `$0–$5/mo` | no |
+| 3 | GOLDFISH | 30 | `$5–$30/mo` | no |
 | 4 | DOLPHIN | 99.99 | `$30–$99.99/mo` | no |
 | 5 | WHALE | 499.99 | `$100–$499.99/mo` | no |
 | 6 | LEVIATHAN | 500.00 | `$500+/mo · CUSTOM OP` | **yes** |

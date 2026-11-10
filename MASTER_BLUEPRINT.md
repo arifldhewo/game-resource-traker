@@ -87,8 +87,8 @@ prts-forecast-api/                          # BE — NestJS DDD
 Tier sekarang adalah **budget cap per bulan**, bukan toggle produk (R5). Engine memilih produk terbaik yang muat di cap tersebut.
 
 1. **F2P (Free to Play):** `$0/mo` — hanya akumulasi natural (harian, mingguan, annihilation); nol pembelian.
-2. **MINNOW:** `$0.01–$9.99/mo` — natural + produk termurah yang menguntungkan (mis. 1× monthly card).
-3. **GOLDFISH:** `$10–$29.99/mo` — monthly card + paket kecil.
+2. **MINNOW:** `$0–$5/mo` — monthly access (mis. 1× monthly card).
+3. **GOLDFISH:** `$5–$30/mo` — monthly card + paket kecil.
 4. **DOLPHIN:** `$30–$99.99/mo` — monthly card + paket headhunting bulanan.
 5. **WHALE:** `$100–$499.99/mo` — ditambah Originite Prime mentah (`op130`…`op1`).
 6. **LEVIATHAN:** `$500+/mo` — WHALE + pembelian OP pack custom (`leviathanPacks`) dan konversi ekstrem farming Base Originium Shard.

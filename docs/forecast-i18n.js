@@ -151,8 +151,8 @@
 
     /* tier rules */
     "tier.rule.F2P": "$0/mo · NATURAL ONLY",
-    "tier.rule.MINNOW": "$0.01–$9.99/mo",
-    "tier.rule.GOLDFISH": "$10–$29.99/mo",
+    "tier.rule.MINNOW": "$0–$5/mo",
+    "tier.rule.GOLDFISH": "$5–$30/mo",
     "tier.rule.DOLPHIN": "$30–$99.99/mo",
     "tier.rule.WHALE": "$100–$499.99/mo",
     "tier.rule.LEVIATHAN": "$500+/mo · CUSTOM OP",
@@ -526,8 +526,8 @@
     "step3.days": "H",
 
     "tier.rule.F2P": "$0/bln · HANYA ALAMI",
-    "tier.rule.MINNOW": "$0,01–$9,99/bln",
-    "tier.rule.GOLDFISH": "$10–$29,99/bln",
+    "tier.rule.MINNOW": "$0–$5/bln",
+    "tier.rule.GOLDFISH": "$5–$30/bln",
     "tier.rule.DOLPHIN": "$30–$99,99/bln",
     "tier.rule.WHALE": "$100–$499,99/bln",
     "tier.rule.LEVIATHAN": "$500+/bln · OP KUSTOM",

@@ -752,7 +752,7 @@ Status: `MATCH` · `GAP` · `INTENTIONAL` · `SCOPE` · `DECIDED`
 
 | # | Area | MASTER_BLUEPRINT | Prototype v3 | Tipe | Status | Usul rekonsiliasi |
 |---|---|---|---|---|---|---|
-| R1 | Jumlah tier | **5**: F2P, GOLDFISH, DOLPHIN, WHALE, LEVIATHAN | **6**: + MINNOW ($0.01–$9.99) | UX + LOGIC | **DECIDED** | Tambah MINNOW; blueprint §3 di-update mengikuti design |
+| R1 | Jumlah tier | **5**: F2P, GOLDFISH, DOLPHIN, WHALE, LEVIATHAN | **6**: + MINNOW ($0–$5) | UX + LOGIC | **DECIDED** | Tambah MINNOW; blueprint §3 di-update mengikuti design |
 | R2 | Eligibility bulan berjalan | Default **false** untuk login permit & green cert bulan ini | Bulan berjalan **selalu** dihitung (`months.length`) | LOGIC | PENDING | Usul: satu toggle default ON + sensitivity line (`FORECAST_V3_IMPLEMENTATION.md` §2.1) |
 | R3 | Annihilation | `expectedAnnihilationClear` 0–1800, user-set | Hardcode **1800** | LOGIC | GAP | Jadikan input di Step 02 |
 | R4 | OP conversion default | Contoh 80% | Default **100%** | DATA/UX | GAP | Samakan default (80% lebih konservatif) atau beri preset |
