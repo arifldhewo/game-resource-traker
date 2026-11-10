@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PRTS Forecast · Roadmap</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#090A0B; --card:#0E1012; --card-2:#111417; --inset:#0A0C0E;
+    --border:#23272B; --border-soft:#191D20;
+    --fg:#EDEEEC; --muted:#878D93; --muted-2:#5E666C;
+    --accent:#E4A93C; --success:#4CB782; --danger:#E5533D; --amber:#C79A4E;
+    --radius:4px;
+    --font-body:"IBM Plex Sans",system-ui,-apple-system,sans-serif;
+    --font-display:"Saira Condensed","IBM Plex Sans",sans-serif;
+    --font-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:13px;line-height:1.45;-webkit-font-smoothing:antialiased}
+  .topbar{display:flex;align-items:center;justify-content:flex-start;gap:14px;padding:0 22px;height:52px;border-bottom:1px solid var(--border);background:rgba(9,10,11,.95);position:sticky;top:0;z-index:10;backdrop-filter:blur(6px)}
+  .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--fg)}
+  .mark{width:26px;height:26px;border:1px solid var(--border);display:grid;place-items:center;background:linear-gradient(160deg,#15181B,#0B0D0F)}
+  .wordmark{display:flex;flex-direction:column;line-height:1}
+  .wordmark b{font-family:var(--font-display);font-size:17px;letter-spacing:.16em;font-weight:600}
+  .wordmark span{font-family:var(--font-mono);font-size:8.5px;letter-spacing:.14em;color:var(--muted-2);margin-top:4px}
+  .nav{display:flex;align-items:center;gap:2px;margin-left:4px}
+  .nav a{font-family:var(--font-display);font-size:12.5px;letter-spacing:.12em;color:var(--muted);text-decoration:none;padding:7px 12px;border:1px solid transparent;border-radius:var(--radius)}
+  .nav a:hover{color:var(--fg);background:#101315}
+  .nav a[aria-current]{color:var(--accent);border-color:var(--border);background:#101315}
+  .nav a[aria-current]::before{content:none}
+  .lang-switch button[aria-pressed="true"]{color:var(--accent)}
+  main{max-width:920px;margin:0 auto;padding:32px 22px 64px}
+  .kicker{font-family:var(--font-mono);font-size:9px;letter-spacing:.16em;color:var(--muted-2);margin-bottom:6px}
+  h1{font-family:var(--font-display);font-size:30px;letter-spacing:.02em;margin:0 0 8px}
+  .lede{color:var(--muted);max-width:640px;margin:0 0 28px}
+  .stage{border:1px solid var(--border);background:var(--card);border-radius:var(--radius);padding:20px 22px;margin-bottom:14px;position:relative}
+  .stage .num{position:absolute;top:16px;right:18px;font-family:var(--font-mono);font-size:10px;letter-spacing:.12em;color:var(--muted-2)}
+  .stage h2{font-family:var(--font-display);font-size:17px;letter-spacing:.04em;margin:0 0 6px;display:flex;align-items:center;gap:10px}
+  .stage h2 .tag{font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;padding:2px 7px;border:1px solid var(--border);border-radius:2px;color:var(--muted)}
+  .stage h2 .tag.now{color:var(--accent);border-color:var(--accent)}
+  .stage h2 .tag.next{color:var(--success);border-color:var(--success)}
+  .stage p{margin:0 0 10px;color:var(--muted)}
+  .stage ul{margin:8px 0 0;padding-left:18px;color:var(--fg)}
+  .stage ul li{margin-bottom:4px}
+  .stage .outcome{margin-top:10px;padding-top:10px;border-top:1px dashed var(--border-soft);font-family:var(--font-mono);font-size:9.5px;letter-spacing:.08em;color:var(--muted-2)}
+  footer{padding:24px 22px;border-top:1px solid var(--border);font-family:var(--font-mono);font-size:9px;letter-spacing:.1em;color:var(--muted-2);text-align:center}
+  a.back{display:inline-block;margin-top:24px;font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;color:var(--accent);text-decoration:none}
+  a.back:hover{text-decoration:underline}
+  @media (max-width:760px){
+    header{padding:0 14px;gap:10px}
+    .nav{gap:2px}
+    .nav a{padding:5px 8px;font-size:11px}
+    main{padding:24px 14px 48px}
+    h1{font-size:24px}
+  }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="index.html">
+    <span class="mark" aria-hidden="true">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <path d="M7 .5 13.5 4v6L7 13.5.5 10V4L7 .5Z" stroke="#E4A93C" stroke-width="1"/>
+        <path d="M4 9V5l3 2.2L10 5v4" stroke="#EDEEEC" stroke-width="1"/>
+      </svg>
+    </span>
+    <span class="wordmark"><b data-i18n="brand.prts">PRTS</b><span data-i18n="brand.terminal">FORECAST TERMINAL</span></span>
+  </a>
+  <nav class="nav" aria-label="Primary">
+    <a href="index.html" data-i18n="nav.forecast">FORECAST</a>
+    <a href="roadmap.html" aria-current="page" data-i18n="nav.roadmap">ROADMAP</a>
+  </nav>
+</header>
+<main>
+  <div class="kicker">ROADMAP · PRODUCT DIRECTION</div>
+  <h1>Where PRTS Forecast is going</h1>
+  <p class="lede">A staged plan. Stage 1 is live. Each later stage reuses the same forecast core and only changes how input is collected or where state lives.</p>
+
+  <div class="stage">
+    <span class="num">01</span>
+    <h2>Forecast calculator <span class="tag now">NOW</span></h2>
+    <p>The current release. A 4-step calculator that projects, per spending tier, whether you can reach a target potential/confidence before the banner deadline.</p>
+    <ul>
+      <li>6-tier spending matrix (F2P → LEVIATHAN) with FEASIBLE / GUARANTEED / LIKELY / DEFICIT badges</li>
+      <li>Pity DP, spark & guarantee rules, yellow/green cert shops, OP best-value basket</li>
+      <li>Bilingual UI (EN/ID) with per-section language profile</li>
+      <li>State persisted in browser (localStorage)</li>
+    </ul>
+    <div class="outcome">OUTCOME: a defensible spending number and the cheapest tier that clears.</div>
+  </div>
+
+  <div class="stage">
+    <span class="num">02</span>
+    <h2>Banner-aware input <span class="tag next">NEXT</span></h2>
+    <p>Replace manual archetype selection with real limited-event banners: pick the banner, and the tool derives operator availability, rate-up share, and spark threshold automatically.</p>
+    <ul>
+      <li>Pull Originite Prime requirements from event stages (no more manual OP counting)</li>
+      <li>Auto calendar for limited windows and reset days</li>
+      <li>Less input, fewer mistakes, same forecast core</li>
+    </ul>
+    <div class="outcome">OUTCOME: setup time from minutes to seconds; inputs become auditable.</div>
+  </div>
+
+  <div class="stage">
+    <span class="num">03</span>
+    <h2>Character upgrade calculator <span class="tag">PLANNED</span></h2>
+    <p>A second calculator that aggregates the full upgrade cost of an operator: target level, mastery skills and their levels, and current state.</p>
+    <ul>
+      <li>Input: target level, mastery skills, current level/mastery</li>
+      <li>Output: materials, LMD, and pull-equivalent cost</li>
+      <li>Feeds the forecast: upgrade needs become part of the required Originite Prime</li>
+    </ul>
+    <div class="outcome">OUTCOME: one number for "what I need to finish this operator", tracked end to end.</div>
+  </div>
+
+  <div class="stage">
+    <span class="num">04</span>
+    <h2>Centralized state <span class="tag">PLANNED</span></h2>
+    <p>Move saved state from the browser to a small backend so forecasts and upgrade plans are reachable from any device.</p>
+    <ul>
+      <li>Account + cloud save, shareable read-only links</li>
+      <li>Sync between phone and desktop</li>
+      <li>Optional: history of past forecasts per banner</li>
+    </ul>
+    <div class="outcome">OUTCOME: access your plan anywhere; no more "lost on this device".</div>
+  </div>
+
+  <a class="back" href="index.html">← BACK TO FORECAST</a>
+</main>
+<footer>PRTS FORECAST · ROADMAP · v0.1</footer>
+<script src="forecast-i18n.js"></script>
+</body>
+</html>

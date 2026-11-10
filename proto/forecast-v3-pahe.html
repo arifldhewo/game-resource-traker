@@ -51,7 +51,8 @@
   .nav a{font-family:var(--font-display);font-size:12.5px;letter-spacing:.12em;color:var(--muted);text-decoration:none;padding:7px 12px;border:1px solid transparent;border-radius:var(--radius)}
   .nav a:hover{color:var(--fg);background:#101315}
   .nav a[aria-current]{color:var(--fg);border-color:var(--border);background:#101315}
-  .nav a[aria-current]::before{content:"";display:inline-block;width:4px;height:4px;background:var(--accent);margin-right:7px;vertical-align:middle;transform:translateY(-1px)}
+  .nav a[aria-current]{color:var(--accent);border-color:var(--border);background:#101315}
+  .nav a[aria-current]::before{content:none}
   .top-right{margin-left:auto;display:flex;align-items:center;gap:18px}
   .neural{display:flex;align-items:center;gap:8px;font-family:var(--font-mono);font-size:9.5px;letter-spacing:.08em;color:var(--muted)}
   .neural .dot{width:5px;height:5px;border-radius:50%;background:var(--muted-2)}
@@ -435,7 +436,9 @@
   }
   @media (max-width:760px){
     .topbar{padding:0 14px;gap:10px;height:52px}
-    .nav,.neural,.divider-v{display:none}
+    .neural,.divider-v{display:none}
+    .nav{gap:2px}
+    .nav a{padding:5px 8px;font-size:11px}
     .shell{padding:16px 13px 28px}
     h1{font-size:25px}
     .headstats{display:grid;grid-template-columns:1fr 1fr}
@@ -474,8 +477,8 @@
     <span class="wordmark"><b data-i18n="brand.prts">PRTS</b><span data-i18n="brand.terminal">FORECAST TERMINAL</span></span>
   </a>
   <nav class="nav" aria-label="Primary">
-    <a href="#" aria-current="page" data-i18n="nav.forecast">FORECAST</a>
-    <a href="#" data-toast="nav.settingsToast" data-i18n="nav.settings">SETTINGS</a>
+    <a href="index.html" aria-current="page" data-i18n="nav.forecast">FORECAST</a>
+    <a href="roadmap.html" data-i18n="nav.roadmap">ROADMAP</a>
   </nav>
   <div class="top-right">
     <div class="lang-switch" id="langSwitch" role="group" aria-label="Language">
@@ -489,16 +492,10 @@
       <option value="mixed-id-en">PROFILE · ID UI + EN INFO</option>
       <option value="custom">PROFILE · CUSTOM</option>
     </select>
-    <div class="neural off" id="neuralStatus"><span class="dot"></span><span><span data-i18n="nav.neural">NEURAL LINK</span> <b data-i18n="nav.off">OFF</b> <span data-i18n="nav.byok">· BYOK</span></span></div>
   </div>
 </header>
 
 <div class="shell">
-  <div class="flow-head">
-    <div class="eyebrow" id="stepEyebrow">/FORECAST · STEP 01 OF 04 · TARGET</div>
-    <h1><span data-i18n="head.operation">Operation Forecast</span> <em>#211</em></h1>
-    <div class="headmeta" id="headMeta"></div>
-  </div>
 
   <nav class="steps" id="steps" aria-label="Forecast steps">
     <button class="step" type="button" data-step="1" aria-current="step"><span class="sn">01</span><span class="sl" data-i18n="step.target">TARGET</span></button>
@@ -766,6 +763,11 @@
     </div>
   </div>
 </div>
+
+<footer style="max-width:1180px;margin:14px auto 0;padding:12px 22px 90px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;font-family:var(--font-mono);font-size:9px;letter-spacing:.1em;color:var(--muted-2)">
+  <span>PRTS FORECAST · PAHE BUILD</span>
+  <a href="roadmap.html" style="color:var(--accent);text-decoration:none">ROADMAP → WHERE THIS IS GOING</a>
+</footer>
 
 <div class="overlay" id="overlay"></div>
 
@@ -1439,7 +1441,8 @@
 
   function renderHead(){
     var cal = view.cal, arch = view.arch;
-    $("#headMeta").innerHTML =
+    var hm = $("#headMeta");
+    if (hm) hm.innerHTML =
       '<span>' + t("head.archetype","ARCHETYPE") + ' <b>' + arch.name + '</b></span><span class="sep">/</span>' +
       '<span>' + (state.mode === "pulls" ? t("step1.modePulls","TARGET PULLS") + ' <b>' + fmt(state.targetPulls) + ' PULLS</b>' : t("head.potential","POTENTIAL") + ' <b>' + state.pot + '</b>' + (state.curPot > 0 ? ' · ' + t("step1.currentPot","FROM") + ' <b>' + state.curPot + '</b>' : '') + ' · ' + t("head.conf","CONF") + ' <b>' + Math.round(state.confidence*100) + '%</b>') + '</span>' +
       '<span class="sep">/</span><span>' + t("head.ends","ENDS") + ' <b>' + isoToDMY(state.endDate) + '</b></span>';
@@ -1548,8 +1551,10 @@
       if (n === step) b.setAttribute("aria-current", "step");
       else b.removeAttribute("aria-current");
     });
-    $("#stepEyebrow").textContent = "/FORECAST · " + t("head.step","STEP") + " 0" + step + " " + t("head.of","OF") + " 04 · " + t("step." + ["target","resources","matrix","outlook"][step - 1], STEP_NAMES[step - 1]);
-    $("#flowProgress").textContent = t("head.step","STEP") + " 0" + step + " / 04";
+    var se = $("#stepEyebrow");
+    if (se) se.textContent = "/FORECAST · " + t("head.step","STEP") + " 0" + step + " " + t("head.of","OF") + " 04 · " + t("step." + ["target","resources","matrix","outlook"][step - 1], STEP_NAMES[step - 1]);
+    var fp = $("#flowProgress");
+    if (fp) fp.textContent = t("head.step","STEP") + " 0" + step + " / 04";
     $("#backBtn").style.visibility = step === 1 ? "hidden" : "visible";
     $("#nextBtn").style.display = step === 4 ? "none" : "inline-flex";
     $("#nextBtn").textContent = step === 3 ? "OPEN OUTLOOK" : "CONTINUE";
