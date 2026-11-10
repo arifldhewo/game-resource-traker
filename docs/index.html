@@ -1513,6 +1513,7 @@
   }
 
   function renderPity(){
+    try {
     var t = view.activeTier;
     var p = Math.min(t.pullsInt, view.horizon);
     var any = view.anySixCurve[p];
@@ -1537,6 +1538,7 @@
 
     $("#pityNote").innerHTML = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="currentColor"/><path d="M6 5v4M6 3v.6" stroke="currentColor" stroke-linecap="round"/></svg><span>' + esc(notes.join(" ")) + '</span>';
     $("#pitySub").textContent = "DP · EXACT DISTRIBUTION · " + (state.mode === "pulls" ? t("pity.sub.pulls","RATE-UP INFO") : t("pity.sub.potential","POTENTIAL") + " " + state.pot + (state.curPot > 0 ? " " + t("step1.currentPot","FROM") + " " + state.curPot : "") + " · " + view.requiredCopies + " " + t("pity.sub.copyReq","COPY REQ"));
+    } catch(e){ console.error("renderPity error:", e); var g = $("#pityGrid"); if (g) g.innerHTML = '<div style="color:var(--danger);font-family:var(--font-mono);font-size:11px;padding:8px">renderPity error: ' + String(e && e.message ? e.message : e) + '</div>'; }
   }
 
   function renderStep(){
@@ -1570,15 +1572,17 @@
   }
 
   function render(){
-    view = computeState();
-    renderHead();
-    renderPotHints();
-    renderMatrix();
-    renderBreakdown();
-    renderPity();
-    renderLeviPanel();
-    renderStep();
-    saveState();
+    try {
+      view = computeState();
+      renderHead();
+      renderPotHints();
+      renderMatrix();
+      renderBreakdown();
+      renderPity();
+      renderLeviPanel();
+      renderStep();
+      saveState();
+    } catch(e){ console.error("render error:", e); }
   }
 
   /* Current vs target potential readout (Step 01) */
