@@ -1514,11 +1514,11 @@
 
   function renderPity(){
     try {
-    var t = view.activeTier;
-    var p = Math.min(t.pullsInt, view.horizon);
+    var tier = view.activeTier;
+    var p = Math.min(tier.pullsInt, view.horizon);
     var any = view.anySixCurve[p];
-    var chance = t.chanceTarget;
-    var conf = t.prob;
+    var chance = tier.chanceTarget;
+    var conf = tier.prob;
     var req = view.reqPulls;
 
     $("#pityGrid").innerHTML =
