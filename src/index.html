@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PRTS Forecast · Landing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#090A0B; --card:#0E1012; --card-2:#111417; --inset:#0A0C0E;
+    --border:#23272B; --border-soft:#191D20;
+    --fg:#EDEEEC; --muted:#878D93; --muted-2:#5E666C;
+    --accent:#E4A93C; --success:#4CB782; --danger:#E5533D; --amber:#C79A4E;
+    --radius:4px;
+    --font-body:"IBM Plex Sans",system-ui,-apple-system,sans-serif;
+    --font-display:"Saira Condensed","IBM Plex Sans",sans-serif;
+    --font-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:13px;line-height:1.45;-webkit-font-smoothing:antialiased}
+  header{display:flex;align-items:center;justify-content:flex-start;gap:14px;padding:0 22px;height:52px;border-bottom:1px solid var(--border);background:rgba(9,10,11,.95);position:sticky;top:0;z-index:10;backdrop-filter:blur(6px)}
+  .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--fg)}
+  .mark{width:26px;height:26px;border:1px solid var(--border);display:grid;place-items:center;background:linear-gradient(160deg,#15181B,#0B0D0F)}
+  .wordmark{display:flex;flex-direction:column;line-height:1}
+  .wordmark b{font-family:var(--font-display);font-size:17px;letter-spacing:.16em;font-weight:600}
+  .wordmark span{font-family:var(--font-mono);font-size:8.5px;letter-spacing:.14em;color:var(--muted-2);margin-top:4px}
+  .nav{display:flex;align-items:center;gap:2px;margin-left:14px}
+  .nav a{font-family:var(--font-display);font-size:12.5px;letter-spacing:.12em;color:var(--muted);text-decoration:none;padding:7px 12px;border:1px solid transparent;border-radius:var(--radius)}
+  .nav a:hover{color:var(--fg);background:#101315}
+  .nav a[aria-current]{color:var(--accent);border-color:var(--border);background:#101315}
+  .nav a[aria-current]::before{content:none}
+  main{max-width:1080px;margin:0 auto;padding:56px 22px 64px}
+  .hero-kicker{font-family:var(--font-mono);font-size:9px;letter-spacing:.16em;color:var(--muted-2);margin-bottom:10px}
+  .hero h1{font-family:var(--font-display);font-size:52px;letter-spacing:.02em;line-height:1.02;margin:0 0 14px;text-transform:uppercase}
+  .hero h1 em{color:var(--accent);font-style:normal}
+  .hero p{color:var(--muted);max-width:620px;font-size:14px;line-height:1.6;margin:0 0 22px}
+  .cta{display:inline-flex;align-items:center;gap:8px;font-family:var(--font-display);font-size:13px;letter-spacing:.12em;padding:11px 18px;border:1px solid var(--accent);border-radius:var(--radius);color:var(--bg);background:var(--accent);text-decoration:none;font-weight:600}
+  .cta:hover{filter:brightness(1.08)}
+  .cta.ghost{background:transparent;color:var(--fg);border-color:var(--border)}
+  .cta.ghost:hover{border-color:var(--accent);color:var(--accent)}
+  .hero-actions{display:flex;gap:10px;flex-wrap:wrap}
+  .section{margin-top:64px}
+  .section-kicker{font-family:var(--font-mono);font-size:9px;letter-spacing:.16em;color:var(--muted-2);margin-bottom:6px}
+  .section h2{font-family:var(--font-display);font-size:26px;letter-spacing:.04em;margin:0 0 18px;text-transform:uppercase}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+  @media (max-width:760px){.grid{grid-template-columns:1fr}}
+  .card{border:1px solid var(--border);background:var(--card);border-radius:var(--radius);padding:20px 22px;position:relative}
+  .card .num{font-family:var(--font-mono);font-size:10px;letter-spacing:.12em;color:var(--muted-2);margin-bottom:8px}
+  .card h3{font-family:var(--font-display);font-size:16px;letter-spacing:.06em;margin:0 0 6px;text-transform:uppercase}
+  .card p{margin:0;color:var(--muted);font-size:12.5px;line-height:1.55}
+  .card .tag{display:inline-block;margin-top:10px;font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;padding:2px 7px;border:1px solid var(--border);border-radius:2px;color:var(--muted)}
+  .card .tag.now{color:var(--accent);border-color:var(--accent)}
+  .card .tag.next{color:var(--success);border-color:var(--success)}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:40px}
+  @media (max-width:760px){.stats{grid-template-columns:repeat(2,1fr)}}
+  .stat{border:1px solid var(--border);background:var(--card);border-radius:var(--radius);padding:14px 16px}
+  .stat .v{font-family:var(--font-display);font-size:26px;letter-spacing:.04em;color:var(--accent)}
+  .stat .l{font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;color:var(--muted-2);margin-top:4px}
+  footer{padding:24px 22px;border-top:1px solid var(--border);font-family:var(--font-mono);font-size:9px;letter-spacing:.1em;color:var(--muted-2);text-align:center;margin-top:64px}
+  a{text-decoration:none}
+  @media (max-width:760px){
+    header{padding:0 14px;gap:10px;height:52px}
+    .nav{gap:2px}
+    .nav a{padding:5px 8px;font-size:11px}
+    main{padding:40px 14px 48px}
+    .hero h1{font-size:36px}
+  }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="index.html">
+    <span class="mark" aria-hidden="true">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <path d="M7 .5 13.5 4v6L7 13.5.5 10V4L7 .5Z" stroke="#E4A93C" stroke-width="1"/>
+        <path d="M4 9V5l3 2.2L10 5v4" stroke="#EDEEEC" stroke-width="1"/>
+      </svg>
+    </span>
+    <span class="wordmark"><b>PRTS</b><span>FORECAST TERMINAL</span></span>
+  </a>
+  <nav class="nav" aria-label="Primary">
+    <a href="forecast.html" data-i18n="nav.forecast">FORECAST</a>
+    <a href="roadmap.html" data-i18n="nav.roadmap">ROADMAP</a>
+  </nav>
+</header>
+<main>
+  <div class="hero-kicker">PRTS FORECAST · LANDING</div>
+  <h1>Know your <em>pulls</em> before the banner ends.</h1>
+  <p>A 4-step calculator for Arknights gacha: project per spending tier whether you can reach your target potential and confidence before the deadline. Bilingual, state persisted locally, no backend.</p>
+  <div class="hero-actions">
+    <a class="cta" href="forecast.html">OPEN FORECAST →</a>
+    <a class="cta ghost" href="roadmap.html">VIEW ROADMAP</a>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="v">6</div><div class="l">SPENDING TIERS</div></div>
+    <div class="stat"><div class="v">4</div><div class="l">STEPS</div></div>
+    <div class="stat"><div class="v">2</div><div class="l">LANGUAGES</div></div>
+    <div class="stat"><div class="v">0</div><div class="l">BACKEND NEEDED</div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-kicker">WHAT IT DOES</div>
+    <h2>Forecast before you spend</h2>
+    <div class="grid">
+      <div class="card">
+        <div class="num">01</div>
+        <h3>Tier matrix</h3>
+        <p>Six spending tiers (F2P → LEVIATHAN) with FEASIBLE / GUARANTEED / LIKELY / DEFICIT badges, benchmarked against your target.</p>
+        <span class="tag now">LIVE</span>
+      </div>
+      <div class="card">
+        <div class="num">02</div>
+        <h3>Pity engine</h3>
+        <p>Exact DP over the 6★ pity curve, spark and guarantee rules, yellow/green cert shops, best-value OP basket.</p>
+        <span class="tag now">LIVE</span>
+      </div>
+      <div class="card">
+        <div class="num">03</div>
+        <h3>Banner-aware input</h3>
+        <p>Derive availability, rate-up share and spark threshold from real limited-event banners instead of manual entry.</p>
+        <span class="tag next">NEXT</span>
+      </div>
+      <div class="card">
+        <div class="num">04</div>
+        <h3>Character upgrade</h3>
+        <p>Aggregate full upgrade cost (level, mastery) and feed it into the forecast so one number covers the whole operator.</p>
+        <span class="tag">PLANNED</span>
+      </div>
+    </div>
+  </div>
+</main>
+<footer>PRTS FORECAST · LANDING · v0.1</footer>
+<script src="forecast-i18n.js"></script>
+</body>
+</html>
