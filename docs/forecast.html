@@ -1,0 +1,2106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PRTS · Forecast Terminal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#090A0B; --card:#0E1012; --card-2:#111417; --inset:#0A0C0E;
+    --border:#23272B; --border-soft:#191D20;
+    --fg:#EDEEEC; --muted:#878D93; --muted-2:#5E666C;
+    --accent:#E4A93C; --success:#4CB782; --danger:#E5533D; --amber:#C79A4E;
+    --f2p:#7C848C; --goldfish:#5E8FA8; --dolphin:#5AA6C4; --whale:#E4A93C; --leviathan:#D9713F;
+    --minnow:#B0BEC9; --radius:3px;
+    --font-display:"Saira Condensed","Oswald","Arial Narrow",sans-serif;
+    --font-body:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    --font-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:var(--bg); color:var(--fg); font-family:var(--font-body);
+    font-size:13px; line-height:1.45; -webkit-font-smoothing:antialiased; min-height:100vh;
+  }
+  body::before{
+    content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
+    background-image:
+      linear-gradient(to right,rgba(255,255,255,.013) 1px,transparent 1px),
+      linear-gradient(to bottom,rgba(255,255,255,.013) 1px,transparent 1px);
+    background-size:64px 64px;
+  }
+  body.locked{overflow:hidden}
+  button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+  input,select{font:inherit;color:inherit}
+  ::selection{background:rgba(228,169,60,.28)}
+
+  /* top bar */
+  .topbar{
+    position:relative; z-index:5; height:56px; display:flex; align-items:center; gap:26px;
+    padding:0 22px; border-bottom:1px solid var(--border); background:rgba(9,10,11,.95);
+  }
+  .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit}
+  .mark{width:26px;height:26px;border:1px solid var(--border);display:grid;place-items:center;background:linear-gradient(160deg,#15181B,#0B0D0F)}
+  .wordmark{display:flex;flex-direction:column;line-height:1}
+  .wordmark b{font-family:var(--font-display);font-size:17px;letter-spacing:.16em;font-weight:600}
+  .wordmark span{font-family:var(--font-mono);font-size:8.5px;letter-spacing:.14em;color:var(--muted-2);margin-top:4px}
+  .nav{display:flex;align-items:center;gap:2px;margin-left:4px}
+  .nav a{font-family:var(--font-display);font-size:12.5px;letter-spacing:.12em;color:var(--muted);text-decoration:none;padding:7px 12px;border:1px solid transparent;border-radius:var(--radius)}
+  .nav a:hover{color:var(--fg);background:#101315}
+  .nav a[aria-current]{color:var(--fg);border-color:var(--border);background:#101315}
+  .nav a[aria-current]{color:var(--accent);border-color:var(--border);background:#101315}
+  .nav a[aria-current]::before{content:none}
+  .top-right{margin-left:auto;display:flex;align-items:center;gap:18px}
+  .neural{display:flex;align-items:center;gap:8px;font-family:var(--font-mono);font-size:9.5px;letter-spacing:.08em;color:var(--muted)}
+  .neural .dot{width:5px;height:5px;border-radius:50%;background:var(--muted-2)}
+  .neural.off .dot{background:var(--amber);box-shadow:0 0 0 3px rgba(199,154,78,.12)}
+  .neural b{color:var(--fg);font-weight:500}
+  .divider-v{width:1px;height:24px;background:var(--border)}
+  .lang-switch{display:flex;border:1px solid var(--border);border-radius:2px;overflow:hidden;flex:none}
+  .lang-switch button{background:none;border:0;padding:5px 9px;font-family:var(--font-mono);font-size:9px;letter-spacing:.08em;color:var(--muted-2);cursor:pointer}
+  .lang-switch button + button{border-left:1px solid var(--border)}
+  .lang-switch button[aria-pressed="true"]{background:rgba(228,169,60,.14);color:var(--accent)}
+  .profile{display:flex;align-items:center;gap:9px}
+  .avatar{width:28px;height:28px;border:1px solid var(--border);display:grid;place-items:center;font-family:var(--font-display);font-size:13px;letter-spacing:.06em;color:var(--accent);background:#111417}
+  .profile-txt{display:flex;flex-direction:column;line-height:1.25}
+  .profile-txt b{font-size:12px;font-weight:500}
+  .profile-txt span{font-family:var(--font-mono);font-size:8.5px;color:var(--muted-2);letter-spacing:.06em}
+  .signin{
+    display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border);background:#111417;
+    padding:7px 12px;font-family:var(--font-display);font-size:11.5px;letter-spacing:.1em;color:var(--fg);border-radius:var(--radius);
+  }
+  .signin:hover{border-color:#3A4249;background:#161A1D}
+  .signin svg{flex:none}
+
+  /* shell */
+  .shell{position:relative;z-index:1;max-width:720px;margin:0 auto;padding:24px 20px 96px}
+
+  /* stepper */
+  .flow-head{margin-bottom:16px}
+  .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:0 0 20px}
+  .step{display:flex;flex-direction:column;align-items:flex-start;gap:3px;padding:8px 9px;border:1px solid var(--border);background:var(--card);border-radius:2px;text-align:left;transition:border-color .15s ease,background .15s ease}
+  .step .sn{font-family:var(--font-mono);font-size:8px;letter-spacing:.1em;color:var(--muted-2)}
+  .step .sl{font-family:var(--font-display);font-size:11px;font-weight:600;letter-spacing:.1em;color:var(--muted)}
+  .step:hover{border-color:#3A4249}
+  .step.is-done{border-color:rgba(76,183,130,.28);background:rgba(76,183,130,.04)}
+  .step.is-done .sn{color:var(--success)}
+  .step.is-active{border-color:rgba(228,169,60,.5);background:rgba(228,169,60,.08)}
+  .step.is-active .sn{color:var(--accent)}
+  .step.is-active .sl{color:var(--fg)}
+
+  .step-pane{display:none}
+  .step-pane.is-active{display:block;animation:paneIn .18s ease both}
+  @keyframes paneIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+
+  .pane-head{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin-bottom:12px}
+  .pane-head .k{font-family:var(--font-mono);font-size:8.5px;letter-spacing:.13em;color:var(--accent);margin-bottom:5px}
+  .pane-head h2{margin:0;font-family:var(--font-display);font-size:23px;font-weight:600;letter-spacing:.04em;line-height:1.05;text-transform:uppercase}
+  .pane-state{font-family:var(--font-mono);font-size:8.5px;letter-spacing:.1em;color:var(--muted-2);border:1px solid var(--border);padding:4px 7px;white-space:nowrap}
+  .pane-right{display:flex;align-items:center;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+  .pane-body{display:flex;flex-direction:column;gap:12px}
+
+  .mini-card{border:1px solid var(--border);background:var(--card);border-radius:var(--radius)}
+  .mini-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 12px;border-bottom:1px solid var(--border)}
+  .mini-head h3{margin:0;font-family:var(--font-display);font-size:12px;font-weight:600;letter-spacing:.13em;text-transform:uppercase}
+  .mini-head span{font-family:var(--font-mono);font-size:8px;letter-spacing:.08em;color:var(--muted-2);white-space:nowrap}
+  .mini-body{padding:13px}
+
+  .matrix-note{font-family:var(--font-mono);font-size:8.5px;letter-spacing:.1em;color:var(--muted-2)}
+  .select-hint{font-family:var(--font-mono);font-size:8.5px;line-height:1.5;letter-spacing:.04em;color:var(--muted-2);padding:2px 0}
+  .tierGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+
+  .outlook-picker{border:1px solid var(--border);background:var(--card);border-radius:var(--radius);padding:10px 12px}
+  .outlook-picker .k{font-family:var(--font-mono);font-size:8px;letter-spacing:.12em;color:var(--muted-2)}
+  .tier-pills{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+  .tier-pill{display:inline-flex;align-items:center;gap:5px;padding:5px 8px;border:1px solid var(--border);border-radius:2px;font-family:var(--font-mono);font-size:8.5px;letter-spacing:.07em;color:var(--muted)}
+  .tier-pill .d{width:4px;height:4px;background:var(--c);flex:none}
+  .tier-pill:hover{color:var(--fg)}
+  .tier-pill.on{border-color:var(--c);color:var(--fg);background:rgba(255,255,255,.035)}
+
+  .flowbar{position:sticky;bottom:0;z-index:20;display:flex;align-items:center;gap:10px;margin-top:16px;padding:10px 12px;border:1px solid var(--border);background:rgba(14,16,18,.96);backdrop-filter:blur(10px)}
+  .flow-progress{font-family:var(--font-mono);font-size:8.5px;letter-spacing:.1em;color:var(--muted-2);margin:0 auto;white-space:nowrap}
+  .flow-actions{display:flex;align-items:center;gap:8px}
+  .flow-actions .final{display:none}
+
+  .pagehead{display:flex;align-items:flex-end;justify-content:space-between;gap:28px;flex-wrap:wrap;margin-bottom:18px}
+  .eyebrow{display:flex;align-items:center;gap:8px;font-family:var(--font-mono);font-size:9.5px;letter-spacing:.14em;color:var(--muted);margin-bottom:8px}
+  .eyebrow::before{content:"";width:14px;height:1px;background:var(--accent)}
+  h1{margin:0 0 8px;font-family:var(--font-display);font-size:30px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;line-height:1}
+  .headmeta{display:flex;flex-wrap:wrap;gap:5px 12px;font-family:var(--font-mono);font-size:10px;letter-spacing:.05em;color:var(--muted)}
+  .headmeta b{color:var(--fg);font-weight:500}
+  .headmeta .sep{color:#31363B}
+  .headstats{display:grid;grid-template-columns:repeat(4,1fr);align-items:stretch;border:1px solid var(--border);background:var(--card)}
+  .hstat{padding:10px 16px 11px;border-right:1px solid var(--border);min-width:96px}
+  .hstat:last-child{border-right:0}
+  .hstat span{display:block;font-family:var(--font-mono);font-size:8.5px;letter-spacing:.12em;color:var(--muted-2);margin-bottom:5px}
+  .hstat b{display:block;font-family:var(--font-display);font-size:22px;font-weight:600;line-height:1;letter-spacing:.03em}
+  .hstat small{display:block;margin-top:4px;font-family:var(--font-mono);font-size:8.5px;color:var(--muted);letter-spacing:.05em}
+  .hstat b.acc{color:var(--accent)}
+  .hstat b.ok{color:var(--success)}
+
+  .layout{display:grid;grid-template-columns:352px minmax(0,1fr);gap:18px;align-items:start}
+  .layout > *{min-width:0}
+  .card,.panel,.card-body,.field,.control,.grid2,.grid3{min-width:0}
+
+  /* cards */
+  .card{border:1px solid var(--border);background:var(--card);border-radius:var(--radius);margin-bottom:14px}
+  .card:last-child{margin-bottom:0}
+  .card-head{
+    width:100%;display:flex;align-items:center;gap:10px;padding:11px 13px;border-bottom:1px solid var(--border);
+    text-align:left;
+  }
+  .card-head .idx{font-family:var(--font-mono);font-size:8.5px;color:var(--accent);letter-spacing:.08em}
+  .card-head h2{margin:0;font-family:var(--font-display);font-size:12.5px;font-weight:600;letter-spacing:.13em;color:var(--fg);text-transform:uppercase}
+  .card-head .state{margin-left:auto;font-family:var(--font-mono);font-size:8.5px;letter-spacing:.08em;color:var(--muted-2)}
+  .card-head svg{color:var(--muted-2);transition:transform .18s ease}
+  .card.collapsed .card-head svg{transform:rotate(-90deg)}
+  .card.collapsed .card-body{display:none}
+  .card-body{padding:13px}
+
+  .field{margin-bottom:12px}
+  .field:last-child{margin-bottom:0}
+  .field > label{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-family:var(--font-mono);font-size:8.5px;letter-spacing:.1em;color:var(--muted);margin-bottom:5px}
+  .field > label i{font-style:normal;color:var(--muted-2);font-size:8px;letter-spacing:.08em}
+  .control{display:flex;align-items:stretch;border:1px solid var(--border);background:var(--inset);border-radius:2px}
+  .control:focus-within{border-color:#3C444B}
+  .control.invalid{border-color:rgba(229,83,61,.65)}
+  .control input{flex:1;min-width:0;background:none;border:0;outline:0;padding:7px 9px;font-family:var(--font-mono);font-size:12.5px;color:var(--fg)}
+  .control input:disabled{color:var(--muted-2);cursor:not-allowed}
+  .control .unit{padding:0 8px;display:grid;place-items:center;border-left:1px solid var(--border-soft);font-family:var(--font-mono);font-size:8px;letter-spacing:.08em;color:var(--muted-2)}
+  select.control{width:100%;min-width:0;padding:7px 9px;font-family:var(--font-mono);font-size:11.5px;color:var(--fg);outline:0;appearance:none;
+    background-image:linear-gradient(45deg,transparent 50%,var(--muted-2) 50%),linear-gradient(135deg,var(--muted-2) 50%,transparent 50%);
+    background-position:calc(100% - 14px) 13px,calc(100% - 9px) 13px;background-size:5px 5px,5px 5px;background-repeat:no-repeat;
+  }
+  select.control option{background:#111417;color:var(--fg)}
+  .hint{font-family:var(--font-mono);font-size:8.5px;line-height:1.5;color:var(--muted-2);letter-spacing:.03em;margin-top:5px}
+  .hint:empty{display:none}
+  .hint b{color:var(--muted);font-weight:500}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px}
+
+  .seg{display:flex;border:1px solid var(--border);background:var(--inset);border-radius:2px;overflow:hidden}
+  .seg button{flex:1;padding:7px 4px;font-family:var(--font-mono);font-size:9.5px;letter-spacing:.1em;color:var(--muted)}
+  .seg button + button{border-left:1px solid var(--border)}
+  .seg button[aria-pressed="true"]{background:rgba(228,169,60,.12);color:var(--accent)}
+  .seg button:hover{color:var(--fg)}
+
+  .chips{display:flex;gap:6px}
+  .chips button{flex:1;padding:6px 0;border:1px solid var(--border);background:var(--inset);font-family:var(--font-mono);font-size:9.5px;color:var(--muted);border-radius:2px}
+  .chips button[aria-pressed="true"]{border-color:rgba(228,169,60,.45);background:rgba(228,169,60,.1);color:var(--accent)}
+  .chips button:hover{color:var(--fg)}
+
+  .switch{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:2px 0 2px}
+  .switch .sw-txt{font-family:var(--font-mono);font-size:9px;letter-spacing:.09em;color:var(--muted)}
+  .switch .sw-txt b{display:block;color:var(--fg);font-weight:500;font-size:10px;letter-spacing:.08em;margin-bottom:2px}
+  .tgl{position:relative;width:34px;height:18px;border:1px solid var(--border);background:var(--inset);border-radius:2px;flex:none}
+  .tgl::after{content:"";position:absolute;top:2px;left:3px;width:12px;height:12px;background:var(--muted-2);transition:.16s ease}
+  .tgl[aria-pressed="true"]{border-color:rgba(228,169,60,.5);background:rgba(228,169,60,.12)}
+  .tgl[aria-pressed="true"]::after{left:17px;background:var(--accent)}
+
+  .range-row{display:flex;align-items:center;gap:9px}
+  input[type=range]{flex:1;-webkit-appearance:none;appearance:none;height:18px;background:none;outline:0}
+  input[type=range]::-webkit-slider-runnable-track{height:3px;background:#22272B}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:10px;height:14px;background:var(--accent);margin-top:-6px;border-radius:1px}
+  input[type=range]::-moz-range-track{height:3px;background:#22272B}
+  input[type=range]::-moz-range-thumb{width:10px;height:14px;background:var(--accent);border:0;border-radius:1px}
+  .range-val{font-family:var(--font-mono);font-size:11.5px;color:var(--fg);min-width:40px;text-align:right}
+
+  .check{display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px dashed rgba(35,39,43,.7)}
+  .check:last-child{border-bottom:0}
+  .check input{appearance:none;width:11px;height:11px;margin:2px 0 0;border:1px solid var(--border);background:var(--inset);flex:none;cursor:pointer;position:relative}
+  .check input:checked{border-color:var(--accent);background:rgba(228,169,60,.16)}
+  .check input:checked::after{content:"";position:absolute;left:2px;top:0px;width:4px;height:7px;border-right:1px solid var(--accent);border-bottom:1px solid var(--accent);transform:rotate(40deg)}
+  .check span{font-family:var(--font-mono);font-size:8.5px;line-height:1.5;letter-spacing:.04em;color:var(--muted);cursor:pointer}
+  .check span b{color:var(--fg);font-weight:500}
+
+  .engine-note{display:flex;gap:8px;padding:10px 12px;border:1px dashed var(--border);font-size:11px;line-height:1.55;color:var(--muted);background:rgba(255,255,255,.012)}
+  .engine-note svg{flex:none;margin-top:2px;color:var(--muted-2)}
+
+  /* panels */
+  .panel{border:1px solid var(--border);background:var(--card);border-radius:var(--radius);margin-bottom:16px}
+  .panel-head{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 15px;border-bottom:1px solid var(--border);background:linear-gradient(180deg,#101315,#0E1012)}
+  .panel-head .left{display:flex;flex-direction:column;gap:4px}
+  .panel-head h2{margin:0;font-family:var(--font-display);font-size:17px;font-weight:600;letter-spacing:.07em;text-transform:uppercase}
+  .panel-head .sub{font-family:var(--font-mono);font-size:8.5px;letter-spacing:.12em;color:var(--muted-2)}
+  .panel-head .right{display:flex;align-items:center;gap:10px}
+  .chip-mini{font-family:var(--font-mono);font-size:8.5px;letter-spacing:.09em;color:var(--muted);border:1px solid var(--border);padding:4px 7px}
+  .chip-mini.acc{color:var(--accent);border-color:rgba(228,169,60,.3);background:rgba(228,169,60,.07)}
+
+  /* matrix */
+  .tier{width:100%;display:flex;flex-direction:column;gap:7px;padding:11px;text-align:left;border:1px solid var(--border);background:var(--card);border-radius:var(--radius);position:relative;transition:border-color .15s ease,background .15s ease}
+  .tier:hover{border-color:#3A4249;background:#101315}
+  .tier.sel{border-color:var(--c);background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.012))}
+  .t-top{display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0}
+  .tname{display:flex;align-items:center;gap:6px;font-family:var(--font-display);font-size:15px;font-weight:600;letter-spacing:.08em;line-height:1;color:var(--c)}
+  .tname .starthere{font-family:var(--font-mono);font-size:7px;letter-spacing:.1em;color:var(--accent);border:1px solid rgba(228,169,60,.35);padding:2px 4px}
+  .trule{font-family:var(--font-mono);font-size:8px;letter-spacing:.06em;color:var(--muted-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .tspend{font-family:var(--font-mono);font-size:8.5px;letter-spacing:.02em;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .tspend b{color:var(--c);font-weight:500}
+  .track{position:relative;height:5px;background:#1A1E22}
+  .track .fill{position:absolute;inset:0;width:var(--w);background:var(--c)}
+  .track .tick{position:absolute;top:-2px;bottom:-2px;left:var(--t);width:1px;background:#4B5157}
+  .projmeta{font-family:var(--font-mono);font-size:8px;letter-spacing:.03em;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .t-foot{display:flex;align-items:flex-end;justify-content:space-between;gap:8px;padding-top:7px;border-top:1px solid var(--border-soft)}
+  .num{display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+  .num.total{align-items:flex-start}
+  .num b{font-family:var(--font-mono);font-size:16px;font-weight:500;line-height:1.1}
+  .num i{font-family:var(--font-mono);font-size:7.5px;font-style:normal;letter-spacing:.07em;color:var(--muted-2)}
+  .num.neg b{color:var(--danger)}
+  .num.pos b{color:var(--success)}
+  .badge{display:inline-flex;align-items:center;gap:5px;padding:3px 6px;font-family:var(--font-mono);font-size:7.5px;letter-spacing:.08em;border:1px solid transparent;white-space:nowrap}
+  .badge .d{width:4px;height:4px;border-radius:50%}
+  .badge.guaranteed{color:#0E1012;background:var(--success);border-color:var(--success)}
+  .badge.guaranteed .d{background:#0E1012}
+  .badge.feasible{color:var(--success);background:rgba(76,183,130,.08);border-color:rgba(76,183,130,.22)}
+  .badge.feasible .d{background:var(--success)}
+  .badge.likely{color:var(--amber);background:rgba(199,154,78,.09);border-color:rgba(199,154,78,.26)}
+  .badge.likely .d{background:var(--amber)}
+  .badge.deficit{color:var(--danger);background:rgba(229,83,61,.08);border-color:rgba(229,83,61,.24)}
+  .badge.deficit .d{background:var(--danger)}
+
+  /* breakdown */
+  .bd-head{padding:12px 15px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  .bd-title{display:flex;flex-direction:column;gap:4px}
+  .bd-title h2{margin:0;font-family:var(--font-display);font-size:17px;letter-spacing:.07em;text-transform:uppercase;font-weight:600}
+  .bd-title .sub{font-family:var(--font-mono);font-size:8.5px;letter-spacing:.1em;color:var(--muted-2)}
+  .bd-tier{display:flex;align-items:center;gap:8px;font-family:var(--font-display);font-size:16px;letter-spacing:.08em;color:var(--c)}
+  .bd-tier .sw{width:16px;height:3px;background:var(--c)}
+  .bd-body{padding:6px 15px 12px}
+  .bd-row{display:grid;grid-template-columns:minmax(0,1fr) 58px 74px;gap:12px;align-items:center;padding:7px 0;border-bottom:1px dashed rgba(35,39,43,.7)}
+  .bd-row:last-of-type{border-bottom:0}
+  .bd-lab{display:flex;flex-direction:column;gap:2px;min-width:0}
+  .bd-lab b{font-family:var(--font-mono);font-size:9.5px;letter-spacing:.08em;color:var(--fg);font-weight:500}
+  .bd-lab span{font-family:var(--font-mono);font-size:8.5px;line-height:1.45;color:var(--muted-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .bd-bar{height:4px;background:#1A1E22;position:relative}
+  .bd-bar i{position:absolute;inset:0 auto 0 0;width:var(--w);background:var(--c);opacity:.75}
+  .bd-val{font-family:var(--font-mono);font-size:11.5px;color:var(--fg);text-align:right}
+  .bd-total{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:baseline;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+  .bd-total span{font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;color:var(--muted)}
+  .bd-total b{font-family:var(--font-display);font-size:24px;font-weight:600;color:var(--c);line-height:1}
+  .bd-total b small{font-family:var(--font-mono);font-size:8.5px;letter-spacing:.1em;color:var(--muted-2);margin-left:6px}
+
+  /* pity */
+  .pity-grid{display:grid;grid-template-columns:repeat(4,1fr)}
+  .pity-cell{padding:13px 15px;border-right:1px solid var(--border)}
+  .pity-cell:last-child{border-right:0}
+  .pity-cell span{display:block;font-family:var(--font-mono);font-size:8px;letter-spacing:.12em;color:var(--muted-2);margin-bottom:6px}
+  .pity-cell b{display:block;font-family:var(--font-display);font-size:23px;font-weight:600;line-height:1}
+  .pity-cell small{display:block;margin-top:5px;font-family:var(--font-mono);font-size:8px;letter-spacing:.05em;color:var(--muted)}
+  .pity-note{padding:10px 15px;border-top:1px solid var(--border);font-family:var(--font-mono);font-size:9px;line-height:1.6;letter-spacing:.03em;color:var(--muted);display:flex;gap:8px}
+  .pity-note svg{flex:none;margin-top:2px;color:var(--muted-2)}
+
+  /* terminal */
+  .terminal{padding:0;background:#080A0B}
+  .term-body{padding:14px 15px 16px;font-family:var(--font-mono);font-size:11px;line-height:1.8;color:var(--success);min-height:104px;background:rgba(0,0,0,.45)}
+  .term-body .prompt{color:var(--accent);white-space:pre-wrap;word-break:break-word}
+  .term-body .prompt .dim{color:var(--muted-2)}
+  .term-body .out{white-space:pre-wrap;margin-top:6px;color:var(--success);text-shadow:0 0 6px rgba(76,183,130,.25)}
+  .cursor{display:inline-block;width:6px;height:11px;background:var(--success);vertical-align:-1px;animation:blink 1.1s steps(1) infinite}
+  @keyframes blink{50%{opacity:0}}
+
+  /* action bar */
+  .actionbar{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:12px 15px;border:1px solid var(--border);background:var(--card)}
+  .actionbar .meta{display:flex;align-items:center;gap:9px;font-family:var(--font-mono);font-size:8.5px;letter-spacing:.09em;color:var(--muted-2);flex-wrap:wrap}
+  .actionbar .actions{display:flex;gap:9px}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:8px 13px;border:1px solid var(--border);background:#111417;border-radius:var(--radius);
+    font-family:var(--font-display);font-size:11.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--fg)}
+  .btn:hover{border-color:#3A4249;background:#161A1D}
+  .btn svg{flex:none}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:#101214;font-weight:600}
+  .btn.primary:hover{background:#EFB74E;border-color:#EFB74E}
+  .btn.ghost{background:none}
+  .btn.small{padding:6px 10px;font-size:10.5px}
+
+  /* modals */
+  .overlay{position:fixed;inset:0;background:rgba(4,5,6,.7);opacity:0;pointer-events:none;transition:opacity .18s ease;z-index:40}
+  .overlay.show{opacity:1;pointer-events:auto}
+  .modal{
+    position:fixed;z-index:41;left:50%;top:24px;width:460px;max-width:calc(100% - 32px);
+    max-height:calc(100vh - 48px);display:flex;flex-direction:column;
+    transform:translate(-50%,0);opacity:0;pointer-events:none;transition:.2s ease;
+    background:var(--card);border:1px solid var(--border);box-shadow:0 30px 80px rgba(0,0,0,.6);
+  }
+  .modal.show{transform:translate(-50%,0);opacity:1;pointer-events:auto}
+  .modal-head{padding:15px 17px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-shrink:0}
+  .modal-head .k{font-family:var(--font-mono);font-size:8.5px;letter-spacing:.13em;color:var(--muted-2);margin-bottom:6px}
+  .modal-head h3{margin:0;font-family:var(--font-display);font-size:20px;letter-spacing:.05em;font-weight:600;text-transform:uppercase}
+  .modal-close{width:26px;height:26px;border:1px solid var(--border);display:grid;place-items:center;color:var(--muted);flex:none}
+  .modal-close:hover{color:var(--fg);border-color:#3A4249}
+  .modal-body{padding:17px;font-size:12px;line-height:1.6;color:var(--muted);overflow-y:auto;flex:1}
+  .modal-body p{margin:0 0 14px}
+  .benefits{list-style:none;margin:0 0 16px;padding:0;display:flex;flex-direction:column;gap:8px}
+  .benefits li{display:flex;gap:9px;align-items:flex-start;font-size:11.5px;color:var(--fg)}
+  .benefits li svg{flex:none;margin-top:2px;color:var(--success)}
+  .google{width:100%;justify-content:center;padding:10px;background:#EDEEEC;color:#15181B;border:1px solid #EDEEEC;font-family:var(--font-display);font-size:12px;letter-spacing:.1em;text-transform:uppercase;display:flex;align-items:center;gap:9px;border-radius:var(--radius);font-weight:600}
+  .google:hover{background:#fff}
+  .or{display:flex;align-items:center;gap:10px;margin:12px 0;font-family:var(--font-mono);font-size:8px;letter-spacing:.12em;color:var(--muted-2)}
+  .or::before,.or::after{content:"";flex:1;height:1px;background:var(--border)}
+  .modal-foot{padding:11px 17px;border-top:1px solid var(--border);background:#0B0D0F;font-family:var(--font-mono);font-size:8.5px;line-height:1.6;letter-spacing:.03em;color:var(--muted-2)}
+
+  /* info trigger + explanation modal */
+  .info-trigger{display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;margin-left:7px;padding:0;border:0;background:none;color:var(--muted-2);cursor:pointer;vertical-align:middle;flex:none}
+  .info-trigger:hover,.info-trigger:focus-visible{color:var(--accent);outline:none}
+  .info-trigger svg{display:block}
+  .field > label .info-trigger{margin-left:auto}
+  .pane-right .info-trigger,.panel-head .right .info-trigger,.bd-title-row .info-trigger,.hstat .info-trigger{flex:none}
+  .hstat .hstat-label{display:flex;align-items:center;justify-content:space-between;gap:6px}
+  .bd-title-row{display:flex;align-items:center;gap:8px}
+  .info-lbl{font-family:var(--font-mono);font-size:8.5px;letter-spacing:.14em;color:var(--muted-2);margin-bottom:7px}
+  .info-analogy{border:1px solid var(--border);background:var(--inset);padding:11px 12px;font-size:12px;line-height:1.6;color:var(--fg);border-radius:var(--radius)}
+  .info-text{font-size:12px;line-height:1.65;color:var(--muted)}
+  .info-text p{margin:0 0 10px}
+  .info-text p:last-child{margin-bottom:0}
+  .info-text b{color:var(--fg);font-weight:500}
+  .info-example{border:1px solid var(--border);background:#0A0C0E;padding:11px 12px;font-family:var(--font-mono);font-size:11px;line-height:1.8;color:var(--fg);white-space:pre-wrap;word-break:break-word}
+  .info-note{font-family:var(--font-mono);font-size:8.5px;letter-spacing:.06em;color:var(--muted-2);margin-top:6px}
+  .info-section{margin-bottom:16px}
+  .info-section:last-child{margin-bottom:0}
+  .durations{display:flex;gap:7px;margin:4px 0 14px}
+  .durations button{flex:1;padding:9px 6px;border:1px solid var(--border);background:var(--inset);font-family:var(--font-mono);font-size:9px;letter-spacing:.08em;color:var(--muted);border-radius:2px}
+  .durations button[aria-pressed="true"]{border-color:rgba(228,169,60,.5);background:rgba(228,169,60,.1);color:var(--accent)}
+  .slug{display:flex;align-items:center;gap:8px;border:1px solid var(--border);background:var(--inset);padding:9px 11px;font-family:var(--font-mono);font-size:10px;color:var(--muted)}
+  .slug b{color:var(--fg);font-weight:500}
+
+  /* toast */
+  .toast{position:fixed;z-index:60;bottom:24px;left:50%;transform:translate(-50%,20px);opacity:0;pointer-events:none;transition:.2s ease;
+    background:#111417;border:1px solid var(--border);border-left:2px solid var(--accent);padding:10px 16px;
+    font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;color:var(--fg);box-shadow:0 16px 40px rgba(0,0,0,.5)}
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+
+  /* sheet */
+  .overlay{position:fixed;inset:0;background:rgba(4,5,6,.66);opacity:0;pointer-events:none;transition:opacity .2s ease;z-index:40}
+  .overlay.show{opacity:1;pointer-events:auto}
+  .sheet{
+    position:fixed;top:0;right:0;height:100vh;width:400px;max-width:100%;
+    background:var(--card);border-right:1px solid var(--border);
+    transform:translateX(100%);transition:transform .24s cubic-bezier(.4,0,.2,1);z-index:41;
+    display:flex;flex-direction:column;
+    box-shadow:-60px 0 80px rgba(0,0,0,.5);
+  }
+  .sheet.show{transform:none}
+  .sheet-head{padding:16px 18px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+  .sheet-head .k{font-family:var(--font-mono);font-size:9px;letter-spacing:.14em;color:var(--muted-2);margin-bottom:6px}
+  .sheet-head h3{margin:0;font-family:var(--font-display);font-size:19px;letter-spacing:.06em;font-weight:600;text-transform:uppercase}
+  .sheet-close{width:26px;height:26px;border:1px solid var(--border);display:grid;place-items:center;color:var(--muted);flex:none}
+  .sheet-close:hover{color:var(--fg);border-color:#3A4249}
+  .sheet-body{padding:18px;overflow:auto;flex:1}
+  .bigval{display:flex;align-items:baseline;gap:8px;padding-bottom:16px;border-bottom:1px solid var(--border);margin-bottom:16px}
+  .bigval b{font-family:var(--font-display);font-size:44px;line-height:.9;font-weight:600;color:var(--accent)}
+  .bigval span{font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;color:var(--muted-2)}
+  .sheet-section{margin-bottom:20px}
+  .sheet-section .lbl{font-family:var(--font-mono);font-size:8.5px;letter-spacing:.14em;color:var(--muted-2);margin-bottom:8px}
+  .formula{border:1px solid var(--border);background:#0A0C0E;padding:12px;font-family:var(--font-mono);font-size:11px;line-height:1.85;color:var(--fg);white-space:pre-wrap;word-break:break-word}
+  .formula .op{color:var(--muted-2)}
+  .formula .res{color:var(--accent)}
+  .lines{display:flex;flex-direction:column;border:1px solid var(--border);background:#0A0C0E}
+  .line{display:grid;grid-template-columns:1fr auto;gap:10px;padding:8px 11px;border-bottom:1px solid var(--border-soft);font-family:var(--font-mono);font-size:10.5px;color:var(--muted)}
+  .line:last-child{border-bottom:0}
+  .line b{color:var(--fg);font-weight:500}
+  .line.active{background:rgba(228,169,60,.09);box-shadow:inset 2px 0 0 var(--accent)}
+  .line.active span:first-child{color:var(--fg)}
+  .sheet-foot{padding:13px 18px;border-top:1px solid var(--border);background:#0B0D0F;display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .sheet-foot span{font-family:var(--font-mono);font-size:8.5px;letter-spacing:.1em;color:var(--muted-2)}
+  .grab{display:none;width:40px;height:3px;background:#3A4249;border-radius:2px;margin:9px auto 0}
+
+  /* product summary */
+  .leviPanel{margin-top:10px;margin-bottom:10px;margin-left:10px;margin-right:10px;padding-top:10px;border-top:1px solid var(--border)}
+  .leviHead{display:flex;align-items:center;justify-content:space-between;gap:10px;font-family:var(--font-mono);font-size:8.5px;letter-spacing:.1em;color:var(--muted-2)}
+  .leviHead b{font-family:var(--font-display);font-size:11px;letter-spacing:.06em;color:var(--accent);font-weight:600}
+  .leviReadout{margin-top:10px;padding:9px 10px;border:1px solid var(--border);background:var(--inset);border-radius:2px;font-family:var(--font-mono);font-size:8.5px;line-height:1.6;letter-spacing:.03em;color:var(--muted-2)}
+  .leviReadout b{color:var(--fg);font-weight:500}
+  .leviReadout .warn{color:var(--amber)}
+
+  /* responsive tweaks */
+  @media (max-width:1180px){
+    .layout{grid-template-columns:1fr}
+    .pagehead{margin-bottom:14px}
+    .headstats{width:100%}
+    .hstat{flex:1}
+  }
+  @media (max-width:820px){
+    .pity-grid{grid-template-columns:1fr 1fr}
+    .pity-cell:nth-child(2n){border-right:0}
+    .pity-cell:nth-child(-n+2){border-bottom:1px solid var(--border)}
+    .bd-row{grid-template-columns:minmax(0,1fr) 62px}
+    .bd-bar{display:none}
+  }
+  @media (max-width:600px){
+    .tierGrid{grid-template-columns:1fr}
+    .pane-head{flex-direction:column;align-items:flex-start;gap:8px}
+    .pane-right{justify-content:flex-start}
+    .pane-head h2{font-size:21px}
+  }
+  @media (max-width:760px){
+    .topbar{padding:0 14px;gap:10px;height:52px}
+    .neural,.divider-v{display:none}
+    .nav{gap:2px}
+    .nav a{padding:5px 8px;font-size:11px}
+    .shell{padding:16px 13px 28px}
+    h1{font-size:25px}
+    .headstats{display:grid;grid-template-columns:1fr 1fr}
+    .hstat{border-bottom:1px solid var(--border)}
+    .hstat:nth-child(2n){border-right:0}
+    .panel-head{flex-direction:column;align-items:flex-start;gap:9px}
+    .panel-head .right{width:100%;justify-content:space-between}
+    .grid3{grid-template-columns:1fr 1fr}
+    .modal{left:0;right:0;top:auto;bottom:0;width:auto;max-width:none;border-radius:14px 14px 0 0;transform:translateY(100%)}
+    .modal.show{transform:none}
+    .term-body{font-size:10.5px}
+    .actionbar .actions{width:100%}
+    .actionbar .actions .btn{flex:1;justify-content:center}
+    .sheet{
+      top:auto;bottom:0;left:0;right:0;width:auto;height:88vh;
+      border-left:0;border-top:1px solid var(--border);
+      border-radius:14px 14px 0 0;
+      box-shadow:0 -40px 80px rgba(0,0,0,.55);
+    }
+    .sheet.show{transform:none}
+    .grab{display:block;width:40px;height:3px;background:#3A4249;border-radius:2px;margin:9px auto 0}
+  }
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="#">
+    <span class="mark" aria-hidden="true">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <path d="M7 .5 13.5 4v6L7 13.5.5 10V4L7 .5Z" stroke="#E4A93C" stroke-width="1"/>
+        <path d="M4 9V5l3 2.2L10 5v4" stroke="#EDEEEC" stroke-width="1"/>
+      </svg>
+    </span>
+    <span class="wordmark"><b data-i18n="brand.prts">PRTS</b><span data-i18n="brand.terminal">FORECAST TERMINAL</span></span>
+  </a>
+  <nav class="nav" aria-label="Primary">
+    <a href="forecast.html" aria-current="page" data-i18n="nav.forecast">FORECAST</a>
+    <a href="roadmap.html" data-i18n="nav.roadmap">ROADMAP</a>
+  </nav>
+  <div class="top-right">
+    <div class="lang-switch" id="langSwitch" role="group" aria-label="Language">
+      <button type="button" data-lang="en" aria-pressed="true">EN</button>
+      <button type="button" data-lang="id" aria-pressed="false">ID</button>
+    </div>
+    <select id="profileSelect" aria-label="Language profile" style="display:none">
+      <option value="all-en">PROFILE · ALL EN</option>
+      <option value="all-id">PROFILE · ALL ID</option>
+      <option value="mixed-en-id">PROFILE · EN UI + ID INFO</option>
+      <option value="mixed-id-en">PROFILE · ID UI + EN INFO</option>
+      <option value="custom">PROFILE · CUSTOM</option>
+    </select>
+  </div>
+</header>
+
+<div class="shell">
+
+  <nav class="steps" id="steps" aria-label="Forecast steps">
+    <button class="step" type="button" data-step="1" aria-current="step"><span class="sn">01</span><span class="sl" data-i18n="step.target">TARGET</span></button>
+    <button class="step" type="button" data-step="2"><span class="sn">02</span><span class="sl" data-i18n="step.resources">RESOURCES</span></button>
+    <button class="step" type="button" data-step="3"><span class="sn">03</span><span class="sl" data-i18n="step.matrix">MATRIX</span></button>
+    <button class="step" type="button" data-step="4"><span class="sn">04</span><span class="sl" data-i18n="step.outlook">OUTLOOK</span></button>
+  </nav>
+
+  <div class="step-view">
+    <!-- 01 target -->
+    <section class="step-pane is-active" data-pane="1">
+      <div class="pane-head">
+        <div><div class="k" data-i18n="step1.mission">01 · TARGET MISSION</div><h2 data-i18n="step1.title">What are you saving for?</h2></div>
+        <span class="pane-state" id="targetState">LIMITED</span>
+      </div>
+      <div class="pane-body">
+      <section class="mini-card">
+        <div class="mini-head"><h3 data-i18n="step1.bannerGoal">Banner &amp; goal</h3></div>
+        <div class="mini-body">
+          <div class="field">
+            <label for="fArch" data-i18n="step1.arch">BANNER ARCHETYPE</label>
+            <select class="control" id="fArch">
+              <option value="LIMITED">LIMITED · <span data-i18n="arch.desc.LIMITED">anniversary / festival</span></option>
+              <option value="EVENT">EVENT · <span data-i18n="arch.desc.EVENT">new solo 6★ debut</span></option>
+              <option value="STANDARD">STANDARD · <span data-i18n="arch.desc.STANDARD">regular 2× 6★ pool</span></option>
+              <option value="CROSSOVER">CROSSOVER · <span data-i18n="arch.desc.CROSSOVER">collab pool</span></option>
+              <option value="KERNEL">KERNEL · <span data-i18n="arch.desc.KERNEL">classic pool</span></option>
+            </select>
+            <div class="hint" id="archHint"></div>
+          </div>
+          <div class="field">
+            <label for="fEnd" data-i18n="step1.endDate">TARGET END DATE</label>
+            <div class="control"><input type="text" id="fEnd" inputmode="numeric" maxlength="10" placeholder="DD/MM/YYYY" autocomplete="off"><span class="unit" data-i18n="step1.unit.end">END</span></div>
+            <div class="hint" id="endHint"></div>
+          </div>
+          <div class="field">
+            <label><span data-i18n="step1.mode">TARGET MODE</span><button class="info-trigger" type="button" data-info="mode" aria-label="Detail target mode"></button></label>
+            <div class="seg" id="modeSeg">
+              <button data-mode="pulls" aria-pressed="false" data-i18n="step1.modePulls">TARGET PULLS</button>
+              <button data-mode="potential" aria-pressed="true" data-i18n="step1.modePotential">TARGET POTENTIAL</button>
+            </div>
+          </div>
+
+          <div id="pullsFields" style="display:none">
+            <div class="field">
+              <label for="fPulls"><span data-i18n="step1.pulls">TARGET PULLS</span> <i id="pullsHintLabel">SPARK 300</i></label>
+              <div class="control"><input type="number" id="fPulls" min="1" max="2000" step="1" value="300"><span class="unit" data-i18n="step1.unit.pull">PULL</span></div>
+              <div class="hint" id="pullsHint"></div>
+            </div>
+          </div>
+
+          <div id="potFields">
+            <div class="grid2">
+              <div class="field">
+                <label for="fCurPot"><span data-i18n="step1.currentPot">CURRENT POTENTIAL</span><button class="info-trigger" type="button" data-info="current-potential" aria-label="Detail current potential"></button></label>
+                <select class="control" id="fCurPot">
+                  <option value="0" selected data-i18n="step1.pot0">POTENTIAL 0 · NOT OWNED</option>
+                  <option value="1" data-i18n="step1.pot1">POTENTIAL 1</option>
+                  <option value="2" data-i18n="step1.pot2">POTENTIAL 2</option>
+                  <option value="3" data-i18n="step1.pot3">POTENTIAL 3</option>
+                  <option value="4" data-i18n="step1.pot4">POTENTIAL 4</option>
+                  <option value="5" data-i18n="step1.pot5">POTENTIAL 5</option>
+                  <option value="6" data-i18n="step1.pot6">POTENTIAL 6</option>
+                </select>
+                <div class="hint" id="curPotHint"></div>
+              </div>
+              <div class="field">
+                <label for="fPot"><span data-i18n="step1.potential">TARGET POTENTIAL</span><button class="info-trigger" type="button" data-info="potential" aria-label="Detail target potential"></button></label>
+                <select class="control" id="fPot">
+                  <option value="1" data-i18n="step1.pot1">POTENTIAL 1</option>
+                  <option value="2" data-i18n="step1.pot2">POTENTIAL 2</option>
+                  <option value="3" data-i18n="step1.pot3">POTENTIAL 3</option>
+                  <option value="4" data-i18n="step1.pot4">POTENTIAL 4</option>
+                  <option value="5" data-i18n="step1.pot5">POTENTIAL 5</option>
+                  <option value="6" data-i18n="step1.pot6">POTENTIAL 6</option>
+                </select>
+                <div class="hint" id="potHint"></div>
+              </div>
+            </div>
+            <div class="field">
+              <label for="fAvail"><span data-i18n="step1.availability">TARGET AVAILABILITY</span><button class="info-trigger" type="button" data-info="availability" aria-label="Detail target availability"></button></label>
+              <select class="control" id="fAvail">
+                <option value="FEATURED" data-i18n="step1.avail.featured">FEATURED · rate-up slot</option>
+                <option value="OFF_BANNER" data-i18n="step1.avail.offbanner">OFF-BANNER · 6★ pool only</option>
+                <option value="ABSENT" data-i18n="step1.avail.absent">ABSENT · not on banner</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="fProb"><span data-i18n="step1.prob">P(TARGET | 6★)</span><button class="info-trigger" type="button" data-info="target-prob" aria-label="Detail P(TARGET | 6★)"></button></label>
+              <div class="control"><input type="number" id="fProb" min="0" max="100" step="1" value="35"><span class="unit" data-i18n="unit.percent">%</span></div>
+              <div class="hint" id="probHint"></div>
+            </div>
+            <div class="field">
+              <label><span data-i18n="step1.confidence">CONFIDENCE TARGET</span><button class="info-trigger" type="button" data-info="confidence" aria-label="Detail confidence target"></button></label>
+              <div class="chips" id="confChips">
+                <button data-conf="0.5">50%</button>
+                <button data-conf="0.8">80%</button>
+                <button data-conf="0.9" aria-pressed="true">90%</button>
+                <button data-conf="0.95">95%</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      </div>
+    </section>
+
+    <!-- 02 resources -->
+    <section class="step-pane" data-pane="2">
+      <div class="pane-head">
+        <div><div class="k" data-i18n="step2.mission">02 · RESOURCES</div><h2 data-i18n="step2.title">What do you already hold?</h2></div>
+        <span class="pane-state" data-i18n="step2.asOfToday">AS OF TODAY</span>
+      </div>
+      <div class="pane-body">
+      <section class="mini-card">
+        <div class="mini-head"><h3 data-i18n="step2.inventory">Inventory snapshot</h3><span data-i18n="step2.asOfToday">AS OF TODAY</span></div>
+        <div class="mini-body">
+          <div class="grid2">
+            <div class="field">
+              <label for="fOrundum" data-i18n="step2.orundum">ORUNDUM</label>
+              <div class="control"><input type="number" id="fOrundum" min="0" step="100" value="12500"><span class="unit" data-i18n="unit.oru">ORU</span></div>
+            </div>
+            <div class="field">
+              <label for="fOP" data-i18n="step2.op">ORIGINITE PRIME</label>
+              <div class="control"><input type="number" id="fOP" min="0" step="1" value="45"><span class="unit" data-i18n="unit.op">OP</span></div>
+            </div>
+            <div class="field">
+              <label for="fHH1" data-i18n="step2.hh1">HH TICKET 1×</label>
+              <div class="control"><input type="number" id="fHH1" min="0" step="1" value="10"><span class="unit" data-i18n="unit.tix">TIX</span></div>
+            </div>
+            <div class="field">
+              <label for="fHH10" data-i18n="step2.hh10">HH TICKET 10×</label>
+              <div class="control"><input type="number" id="fHH10" min="0" step="1" value="1"><span class="unit" data-i18n="unit.tix">TIX</span></div>
+            </div>
+            <div class="field">
+              <label for="fCerts"><span data-i18n="step2.certs">YELLOW CERTS</span><button class="info-trigger" type="button" data-info="certs" aria-label="Detail yellow certs"></button></label>
+              <div class="control"><input type="number" id="fCerts" min="0" step="1" value="180"><span class="unit" data-i18n="unit.cert">CERT</span></div>
+            </div>
+            <div class="field">
+              <label for="fShop"><span data-i18n="step2.shop">SHOP TIER CLEARED</span><button class="info-trigger" type="button" data-info="certs" aria-label="Detail yellow certs"></button></label>
+              <select class="control" id="fShop">
+                <option value="0" data-i18n="step2.shopTier0">TIER 0</option><option value="1" data-i18n="step2.shopTier1">TIER 1</option><option value="2" selected data-i18n="step2.shopTier2">TIER 2</option>
+                <option value="3" data-i18n="step2.shopTier3">TIER 3</option><option value="4" data-i18n="step2.shopTier4">TIER 4</option><option value="5" data-i18n="step2.shopTier5">TIER 5</option>
+              </select>
+            </div>
+          </div>
+          <div class="field" style="margin-top:2px">
+            <label for="fPity"><span data-i18n="step2.pity">CURRENT PITY</span> <i id="pityFlag">SHARED PITY</i><button class="info-trigger" type="button" data-info="pity" aria-label="Detail current pity"></button></label>
+            <div class="control"><input type="number" id="fPity" min="0" max="98" step="1" value="0"><span class="unit" data-i18n="step1.unit.pull">PULL</span></div>
+            <div class="hint" id="pityHint"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- route -->
+      <section class="mini-card">
+        <div class="mini-head"><h3 data-i18n="step2.opConversion">OP conversion</h3><span id="routeState">100% OP</span></div>
+        <div class="mini-body">
+          <div class="field">
+            <label><span data-i18n="step2.opConversionLabel">OP CONVERSION</span> <i data-i18n="step2.opConversionHint">INVENTORY + BEST-VALUE BASKET</i><button class="info-trigger" type="button" data-info="op-pct" aria-label="Detail OP conversion"></button></label>
+            <div class="range-row">
+              <input type="range" id="fOPPct" min="0" max="100" step="5" value="100">
+              <span class="range-val" id="fOPPctVal">100%</span>
+            </div>
+            <div class="hint" data-i18n-html="step2.opHint">Doc values packs at <b>100%</b> OP → Orundum. Lower this only if you reserve OP for skins or Sanity.</div>
+          </div>
+          <div class="hint" style="margin-top:10px" data-i18n-html="step2.matrixNote">Matrix rows are <b>best-value baskets at each tier cap</b>. The optimizer buys Monthly Card → Monthly HH Pack → OP20 → OP6 → OP1, all normal (non-FT). Recurring items reset every 30 days.</div>
+        </div>
+      </section>
+
+      <div class="engine-note">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="currentColor"/><path d="M6 5v4M6 3v.6" stroke="currentColor" stroke-linecap="round"/></svg>
+        <span data-i18n="step2.engineNote">Annihilation (1 800 ORU/wk) & monthly calendar resets are automatically assumed claimed. Income is deterministic only.</span>
+      </div>
+      </div>
+    </section>
+
+    <!-- 03 matrix -->
+    <section class="step-pane" data-pane="3">
+      <div class="pane-head">
+        <div><div class="k" data-i18n="step3.mission">03 · PRE-FLIGHT MATRIX</div><h2 data-i18n="step3.title">Which tier fits the target?</h2></div>
+        <div class="pane-right">
+          <span class="chip-mini" id="modeChip">POTENTIAL · 90%</span>
+          <span class="badge" id="matrixBadge"><span class="d"></span><span id="matrixBadgeLabel">—</span></span>
+          <button class="info-trigger" type="button" data-info="badge" aria-label="Detail status tier"></button>
+        </div>
+      </div>
+      <div class="pane-body">
+        <div class="matrix-note" id="matrixSub">MONTHLY BASKET PROFILES · F2P → LEVIATHAN</div>
+        <div class="tierGrid" id="tiers"></div>
+        <div class="select-hint" data-i18n="step3.tapHint">Tap a tier to inspect where its pulls come from in Outlook.</div>
+      </div>
+    </section>
+
+    <!-- 04 outlook -->
+    <section class="step-pane" data-pane="4">
+      <div class="pane-head">
+        <div><div class="k" data-i18n="step4.mission">04 · OUTLOOK</div><h2 data-i18n="step4.title">Projection &amp; advice</h2></div>
+        <span class="pane-state" id="outlookState">—</span>
+      </div>
+      <div class="pane-body">
+        <div class="headstats" id="headStats"></div>
+        <div class="outlook-picker">
+          <div class="k" data-i18n="step4.inspectTier">INSPECT TIER</div>
+          <div class="tier-pills" id="outlookTiers"></div>
+        </div>
+
+      <section class="panel" id="breakdownPanel">
+        <div class="bd-head">
+          <div class="bd-title">
+            <div class="bd-title-row"><h2 data-i18n="step4.resourceAccum">Resource accumulation</h2><button class="info-trigger" type="button" data-info="monthly-total" aria-label="Detail pulls per month vs total"></button></div>
+            <div class="sub" id="bdSub" data-i18n="step4.selectTier">SELECT A TIER TO INSPECT</div>
+          </div>
+          <div class="bd-tier" id="bdTier"><span class="sw"></span><span>—</span></div>
+        </div>
+        <div class="bd-body" id="bdBody"></div>
+        <div class="leviPanel" id="leviPanel" style="display:none">
+          <div class="leviHead"><b data-i18n="step4.leviathan">LEVIATHAN · CUSTOM OP PACKS</b><span id="leviState">+$99.99/mo</span></div>
+          <div class="hint" data-i18n-html="step4.leviathanHint">Optional add-on on top of the <b>$500/mo best-value basket</b>. Normal packs only — no first-time bonus. OP20 is the best filler at <b>0.400 pulls/$</b>; OP130 is <b>0.390</b>.</div>
+          <div class="grid2" style="margin-top:10px">
+            <div class="field">
+              <label for="fLevi130">OP 130</label>
+              <div class="control"><input type="number" id="fLevi130" min="0" max="99" step="1" value="1"><span class="unit" data-i18n="unit.pack">PACK</span></div>
+            </div>
+            <div class="field">
+              <label for="fLevi66">OP 66</label>
+              <div class="control"><input type="number" id="fLevi66" min="0" max="99" step="1" value="0"><span class="unit" data-i18n="unit.pack">PACK</span></div>
+            </div>
+            <div class="field">
+              <label for="fLevi40">OP 40</label>
+              <div class="control"><input type="number" id="fLevi40" min="0" max="99" step="1" value="0"><span class="unit" data-i18n="unit.pack">PACK</span></div>
+            </div>
+            <div class="field">
+              <label for="fLevi20">OP 20</label>
+              <div class="control"><input type="number" id="fLevi20" min="0" max="99" step="1" value="0"><span class="unit" data-i18n="unit.pack">PACK</span></div>
+            </div>
+          </div>
+          <div id="leviReadout"></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <div class="left">
+            <h2 data-i18n="step4.pity">Pity estimation</h2>
+            <div class="sub" id="pitySub" data-i18n="step4.pitySub">DP · EXACT DISTRIBUTION · NO BINOMIAL</div>
+          </div>
+          <div class="right"><span class="chip-mini" id="pityEval">EVALUATED @ —</span><button class="info-trigger" type="button" data-info="pity-grid" aria-label="Detail pity estimation"></button></div>
+        </div>
+        <div class="pity-grid" id="pityGrid"></div>
+        <div class="pity-note" id="pityNote"></div>
+      </section>
+
+
+
+      </div>
+    </section>
+  </div>
+
+  <div class="flowbar">
+    <button class="btn ghost" id="backBtn" type="button" data-i18n="flow.back">← BACK</button>
+    <span class="flow-progress" id="flowProgress">STEP 01 / 04</span>
+    <div class="flow-actions">
+      <button class="btn primary" id="nextBtn" type="button">CONTINUE</button>
+    </div>
+  </div>
+</div>
+
+<footer style="max-width:1180px;margin:14px auto 0;padding:12px 22px 90px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;font-family:var(--font-mono);font-size:9px;letter-spacing:.1em;color:var(--muted-2)">
+  <span>PRTS FORECAST · PAHE BUILD</span>
+  <a href="roadmap.html" style="color:var(--accent);text-decoration:none">ROADMAP → WHERE THIS IS GOING</a>
+</footer>
+
+<div class="overlay" id="overlay"></div>
+
+
+<!-- explanation modal / bottom sheet -->
+<div class="modal info-modal" id="infoModal" role="dialog" aria-modal="true" aria-labelledby="infoTitle">
+  <div class="grab"></div>
+  <div class="modal-head">
+    <div><div class="k" id="infoKicker">FIELD DETAIL</div><h3 id="infoTitle">—</h3></div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <div class="lang-switch explain-switch" role="group" aria-label="Explanation language">
+        <button type="button" data-explain-lang="en" aria-pressed="true">EN</button>
+        <button type="button" data-explain-lang="id" aria-pressed="false">ID</button>
+      </div>
+      <button class="modal-close" data-close aria-label="Close">
+      <svg width="11" height="11" viewBox="0 0 11 11"><path d="M1 1l9 9M10 1l-9 9" stroke="currentColor"/></svg>
+    </button>
+    </div>
+  </div>
+  <div class="modal-body" id="infoBody"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="forecast-i18n.js"></script>
+<script>
+(function(){
+  "use strict";
+
+  var PULL_COST = 600;
+  var OP_ORUNDUM = 180;
+  var CERT_PACK_CERTS = 258;
+  var CERT_PACK_PULLS = 38;
+  var DAY_MS = 86400000;
+
+  var ARCH = {
+    LIMITED:   { name:"LIMITED",   rateUp:0.70, isolated:true,  spark:300, guaranteeAt:null, freePulls:24,
+                 desc:"Spark at 300 · isolated pity · 1 free 10-pull + 14 daily pulls" },
+    EVENT:     { name:"EVENT",     rateUp:0.50, isolated:false, spark:null, guaranteeAt:150, freePulls:0,
+                 desc:"150-pull rate-up guarantee · shared pity" },
+    STANDARD:  { name:"STANDARD",  rateUp:0.50, isolated:false, spark:null, guaranteeAt:null, freePulls:0,
+                 desc:"No hard pity · shared pity group" },
+    CROSSOVER: { name:"CROSSOVER", rateUp:1.00, isolated:true,  spark:120, guaranteeAt:null, freePulls:0,
+                 desc:"Spark at 120 · isolated pity · 100% rate-up slot" },
+    KERNEL:    { name:"KERNEL",    rateUp:0.50, isolated:false, spark:null, guaranteeAt:null, freePulls:0,
+                 desc:"No hard pity · kernel pity group" }
+  };
+
+  // Product Catalog (USD-based spending classification)
+  var PRODUCT_CATALOG = [
+    // Originite Prime top-up
+    { id:"op1", name:"Originite Prime 1", price:0.99, op:1, pulls:0.30, firstTimeOp:3, firstTimePulls:0.90 },
+    { id:"op6", name:"Originite Prime 6", price:4.99, op:6, pulls:1.80, firstTimeOp:12, firstTimePulls:3.60 },
+    { id:"op20", name:"Originite Prime 20", price:14.99, op:20, pulls:6.0, firstTimeOp:40, firstTimePulls:12.0 },
+    { id:"op40", name:"Originite Prime 40", price:29.99, op:40, pulls:12.0, firstTimeOp:80, firstTimePulls:24.0 },
+    { id:"op66", name:"Originite Prime 66", price:49.99, op:66, pulls:19.8, firstTimeOp:132, firstTimePulls:39.6 },
+    { id:"op130", name:"Originite Prime 130", price:99.99, op:130, pulls:39.0, firstTimeOp:260, firstTimePulls:78.0 },
+
+    // Monthly Card
+    { id:"monthly_card", name:"Monthly Card", price:4.99, op:6, orundum:200*30, pulls:11.8 },
+
+    // Monthly Headhunting Pack
+    { id:"hh_pack", name:"Monthly Headhunting Pack", price:25.99, op:42, tenPermits:1, pulls:22.6 },
+
+    // Starter packs
+    { id:"starter_hh", name:"Starter Headhunting Pack", price:19.99, tenPermits:2, pulls:20 },
+    { id:"starter_special", name:"Starter Special Headhunting Pack", price:29.99, tenPermits:1, pulls:10 },
+  ];
+
+  // Optimizer assumptions (pessimistic):
+  // - no first-time OP bonus, no starter packs, no event packs
+  // - Monthly Card and Monthly HH Pack reset every 30 days
+  // - normal OP packs are unlimited
+  var CYCLE_DAYS = 30;
+
+  var TIERS = [
+    { key:"F2P",       name:"F2P",       rule:"$0/mo · NATURAL ONLY",             color:"var(--f2p)",       hex:"#7C848C", cap:0 },
+    { key:"MINNOW",    name:"MINNOW",    rule:"$0–$4.99/mo",                       color:"var(--minnow)",    hex:"#B0BEC9", cap:4.99 },
+    { key:"GOLDFISH",  name:"GOLDFISH",  rule:"$5–$29.99/mo",                      color:"var(--goldfish)",  hex:"#5E8FA8", cap:29.99 },
+    { key:"DOLPHIN",   name:"DOLPHIN",   rule:"$30–$99.99/mo",                      color:"var(--dolphin)",   hex:"#5AA6C4", cap:99.99 },
+    { key:"WHALE",     name:"WHALE",     rule:"$100–$499.99/mo",                    color:"var(--whale)",     hex:"#E4A93C", cap:499.99 },
+    { key:"LEVIATHAN", name:"LEVIATHAN", rule:"$500+/mo · CUSTOM OP",               color:"var(--leviathan)", hex:"#D9713F", cap:500 }
+  ];
+
+  var state = {
+    arch:"LIMITED", endDate:"", mode:"potential", targetPulls:300,
+    pot:1, curPot:0, avail:"FEATURED", prob:0.35, confidence:0.9,
+    orundum:12500, op:45, hh1:10, hh10:1, certs:180, shop:2, pity:0,
+    opPct:100, selected:"WHALE", step:1,
+    levi:{ op130:1, op66:0, op40:0, op20:0 }
+  };
+
+  var STEP_NAMES = ["TARGET", "RESOURCES", "MATRIX", "OUTLOOK"];
+
+  var STATE_KEY = "fv3.state";
+  function saveState(){
+    try {
+      var clone = JSON.parse(JSON.stringify(state));
+      localStorage.setItem(STATE_KEY, JSON.stringify(clone));
+    } catch(e){}
+  }
+  function loadState(){
+    try {
+      var raw = localStorage.getItem(STATE_KEY);
+      if (!raw) return false;
+      var parsed = JSON.parse(raw);
+      if (!parsed || typeof parsed !== "object") return false;
+      // merge top-level
+      Object.keys(parsed).forEach(function(k){
+        if (k === "levi" && parsed.levi && typeof parsed.levi === "object"){
+          state.levi = Object.assign({}, state.levi, parsed.levi);
+        } else if (parsed[k] !== undefined){
+          state[k] = parsed[k];
+        }
+      });
+      return true;
+    } catch(e){ return false; }
+  }
+  function hydrateInputs(){
+    try {
+      $("#fArch").value = state.arch;
+      $("#fEnd").value = isoToDMY(state.endDate);
+      $$("#modeSeg button").forEach(function(b){ b.setAttribute("aria-pressed", String(b.getAttribute("data-mode") === state.mode)); });
+      $("#pullsFields").style.display = state.mode === "pulls" ? "block" : "none";
+      $("#potFields").style.display = state.mode === "potential" ? "block" : "none";
+      $("#fPulls").value = state.targetPulls;
+      $("#fCurPot").value = state.curPot;
+      $("#fPot").value = state.pot;
+      $("#fAvail").value = state.avail;
+      $("#fProb").value = Math.round(state.prob * 100);
+      $$("#confChips button").forEach(function(b){ b.setAttribute("aria-pressed", String(parseFloat(b.getAttribute("data-conf")) === state.confidence)); });
+      $("#fOrundum").value = state.orundum;
+      $("#fOP").value = state.op;
+      $("#fHH1").value = state.hh1;
+      $("#fHH10").value = state.hh10;
+      $("#fCerts").value = state.certs;
+      $("#fShop").value = state.shop;
+      $("#fPity").value = state.pity;
+      if ($("#fOPPct")) { $("#fOPPct").value = state.opPct; $("#fOPPctVal").textContent = state.opPct + "%"; $("#routeState").textContent = state.opPct + "% OP"; }
+      if ($("#fLevi130")) $("#fLevi130").value = state.levi.op130;
+      if ($("#fLevi66")) $("#fLevi66").value = state.levi.op66;
+      if ($("#fLevi40")) $("#fLevi40").value = state.levi.op40;
+      if ($("#fLevi20")) $("#fLevi20").value = state.levi.op20;
+    } catch(e){}
+  }
+
+  var view = null;
+
+  function $(s){ return document.querySelector(s); }
+  function $$(s){ return Array.prototype.slice.call(document.querySelectorAll(s)); }
+  function esc(s){ return String(s).replace(/&/g,"&").replace(/</g,"<").replace(/>/g,">"); }
+  function fmt(n){ return Math.round(n).toLocaleString("en-US").replace(/,/g," "); }
+  function fmt1(n){ var v = Math.round(n*10)/10; return Math.abs(v)%1===0 ? String(v) : v.toFixed(1); }
+  function pct(n){ return (n*100).toFixed(n>0 && n<0.01 ? 2 : 1) + "%"; }
+  function pad2(n){ return n < 10 ? "0" + n : String(n); }
+  function isoToDMY(iso){
+    var p = String(iso || "").split("-");
+    return p.length === 3 ? p[2] + "/" + p[1] + "/" + p[0] : String(iso || "");
+  }
+  function dmyToISO(text){
+    var m = String(text || "").trim().match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})$/);
+    if (!m) return null;
+    var d = +m[1], mo = +m[2], y = +m[3];
+    if (y < 100) y += 2000;
+    var dt = new Date(y, mo - 1, d);
+    if (dt.getFullYear() !== y || dt.getMonth() !== mo - 1 || dt.getDate() !== d) return null;
+    return y + "-" + pad2(mo) + "-" + pad2(d);
+  }
+
+  /* calendar & economy */
+  function dateOnly(d){ return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
+
+  function countWeeklyCycles(startD, endD){
+    var count = 0;
+    var cur = new Date(startD.getFullYear(), startD.getMonth(), startD.getDate());
+    cur.setDate(cur.getDate() + 1);
+    while (cur <= endD){
+      if (cur.getDay() === 1) count++;
+      cur.setDate(cur.getDate() + 1);
+    }
+    return count;
+  }
+
+  var CERT_STAGES = [
+    { tier:1, cost:10, pulls:1 },
+    { tier:2, cost:18, pulls:2 },
+    { tier:3, cost:40, pulls:5 },
+    { tier:4, cost:70, pulls:10 },
+    { tier:5, cost:120, pulls:20 }
+  ];
+
+  function calcYellowCertPulls(initialCerts, shopTierCleared, futureMonthsCount){
+    var rem = Math.max(0, initialCerts);
+    var pulls = 0;
+    for (var s = shopTierCleared; s < CERT_STAGES.length; s++){
+      if (rem >= CERT_STAGES[s].cost){
+        rem -= CERT_STAGES[s].cost;
+        pulls += CERT_STAGES[s].pulls;
+      } else {
+        break;
+      }
+    }
+    for (var m = 0; m < futureMonthsCount; m++){
+      if (rem < 10) break;
+      for (var s = 0; s < CERT_STAGES.length; s++){
+        if (rem >= CERT_STAGES[s].cost){
+          rem -= CERT_STAGES[s].cost;
+          pulls += CERT_STAGES[s].pulls;
+        } else {
+          break;
+        }
+      }
+    }
+    return { pulls: pulls, remaining: rem };
+  }
+
+  function calendarInfo(now, end){
+    var start = dateOnly(now), endD = dateOnly(end);
+    var days = Math.max(0, Math.round((endD - start) / DAY_MS));
+    var weeks = countWeeklyCycles(start, endD);
+    var months = [];
+    var cur = new Date(start.getFullYear(), start.getMonth(), 1);
+    while (cur <= endD){
+      months.push(new Date(cur));
+      cur = new Date(cur.getFullYear(), cur.getMonth() + 1, 1);
+    }
+    return { days:days, weeks:weeks, months:months, asOf:start, end:endD };
+  }
+
+  /* pity DP */
+  function sixStarProb(q){
+    if (q < 50) return 0.02;
+    return Math.min(0.02 + 0.02 * (q - 49), 1);
+  }
+
+  function sparkBonusAt(pulls, sparkRule){
+    if (!sparkRule || !sparkRule.maxRedemptions) return 0;
+    var redemptions = Math.min(sparkRule.maxRedemptions, Math.floor(pulls / sparkRule.pullsPerRedemption));
+    return redemptions * sparkRule.copiesPerRedemption;
+  }
+
+  function runPity(opts){
+    var required = opts.required;
+    var probTarget = opts.probTarget;
+    var startPity = opts.startPity || 0;
+    var spark = opts.spark;
+    var guaranteeAt = opts.guaranteeAt;
+    var maxPulls = opts.maxPulls;
+
+    if (required <= 0){
+      return { success: new Array(maxPulls + 1).fill(1), expected: new Array(maxPulls + 1).fill(0), chanceTarget: new Array(maxPulls + 1).fill(1) };
+    }
+
+    var cap = Math.max(1, required);
+    var states = new Map();
+    var q0 = Math.min(99, Math.max(0, startPity));
+    states.set("0|" + q0 + "|0|0", 1);
+
+    var success = new Array(maxPulls + 1).fill(0);
+    var expected = new Array(maxPulls + 1).fill(0);
+    var chanceTarget = new Array(maxPulls + 1).fill(0);
+
+    for (var n = 1; n <= maxPulls; n++){
+      var next = new Map();
+      var sparkN = sparkBonusAt(n, spark);
+      var succ = 0, exp = 0, noCopy = 0;
+
+      states.forEach(function(p, key){
+        var parts = key.split("|");
+        var c = +parts[0], q = +parts[1], g = +parts[2], u = +parts[3];
+        if (g === 0 && u === 0 && guaranteeAt != null && n > guaranteeAt) g = 1;
+
+        var p6 = sixStarProb(q);
+        var pT = g === 1 ? 1 : probTarget;
+
+        // 1. no six star
+        var k1 = c + "|" + Math.min(99, q + 1) + "|" + g + "|" + u;
+        next.set(k1, (next.get(k1) || 0) + p * (1 - p6));
+
+        // 2. six star = target
+        var c2 = Math.min(cap, c + 1);
+        var g2 = g === 1 ? 0 : g;
+        var u2 = g === 1 ? 1 : u;
+        var k2 = c2 + "|0|" + g2 + "|" + u2;
+        next.set(k2, (next.get(k2) || 0) + p * p6 * pT);
+
+        // 3. six star = not target
+        var k3 = c + "|0|" + g + "|" + u;
+        next.set(k3, (next.get(k3) || 0) + p * p6 * (1 - pT));
+      });
+
+      states = next;
+
+      states.forEach(function(p, key){
+        var c = +key.split("|")[0];
+        if (c + sparkN >= required) succ += p;
+        exp += p * Math.min(c + sparkN, required);
+        if (c === 0) noCopy += p;
+      });
+
+      success[n] = succ;
+      expected[n] = exp;
+      chanceTarget[n] = Math.min(1, (1 - noCopy) + sparkN);
+    }
+
+    return { success: success, expected: expected, chanceTarget: chanceTarget };
+  }
+
+  function anySixStarCurve(startPity, maxPulls){
+    var states = new Map();
+    states.set(Math.min(99, Math.max(0, startPity)), 1);
+    var out = new Array(maxPulls + 1).fill(0);
+    for (var n = 1; n <= maxPulls; n++){
+      var next = new Map();
+      var any = 0;
+      states.forEach(function(p, q){
+        var p6 = sixStarProb(q);
+        var q1 = Math.min(99, q + 1);
+        next.set(q1, (next.get(q1) || 0) + p * (1 - p6));
+      });
+      states = next;
+      any = 1;
+      states.forEach(function(p){ any -= p; });
+      out[n] = any;
+    }
+    return out;
+  }
+
+  function catalogById(id){
+    for (var i = 0; i < PRODUCT_CATALOG.length; i++){
+      if (PRODUCT_CATALOG[i].id === id) return PRODUCT_CATALOG[i];
+    }
+    return null;
+  }
+
+  // Face-value pulls for one product at a given OP conversion rate.
+  // pulls = floor(orundum/600) + permits + 10 x ten-roll permits (doc formula).
+  function productPulls(prod, opPct){
+    if (!prod) return 0;
+    var oru = (prod.orundum || 0) + (prod.op || 0) * OP_ORUNDUM * (opPct / 100);
+    return oru / PULL_COST + (prod.hhPermits || 0) + (prod.tenPermits || 0) * 10;
+  }
+
+  // Best-value monthly basket for a budget. Only normal (non-FT) items.
+  // Greedy is exact here: OP20 (0.400/$) > OP6 (0.361/$) > OP1 (0.303/$),
+  // so fill with OP20 first, then use OP6/OP1 for the remainder.
+  // Cents arithmetic avoids floating-point floor errors.
+  function optimizeBasket(budgetUsd, opPct){
+    var budgetCents = Math.max(0, Math.round(budgetUsd * 100));
+    var card = catalogById("monthly_card");
+    var hh = catalogById("hh_pack");
+    var op20 = catalogById("op20");
+    var op6 = catalogById("op6");
+    var op1 = catalogById("op1");
+    var best = null;
+
+    function consider(useCard, useHH){
+      var spendCents = (useCard ? Math.round(card.price * 100) : 0) + (useHH ? Math.round(hh.price * 100) : 0);
+      if (spendCents > budgetCents) return;
+
+      var items = [];
+      var pulls = 0;
+      if (useCard){ items.push({ prod:card, qty:1 }); pulls += productPulls(card, opPct); }
+      if (useHH){ items.push({ prod:hh, qty:1 }); pulls += productPulls(hh, opPct); }
+
+      var rem = budgetCents - spendCents;
+
+      var q20 = Math.floor(rem / Math.round(op20.price * 100));
+      if (q20 > 0){ items.push({ prod:op20, qty:q20 }); pulls += q20 * productPulls(op20, opPct); rem -= q20 * Math.round(op20.price * 100); }
+
+      var q6 = Math.floor(rem / Math.round(op6.price * 100));
+      if (q6 > 0){ items.push({ prod:op6, qty:q6 }); pulls += q6 * productPulls(op6, opPct); rem -= q6 * Math.round(op6.price * 100); }
+
+      var q1 = Math.floor(rem / Math.round(op1.price * 100));
+      if (q1 > 0){ items.push({ prod:op1, qty:q1 }); pulls += q1 * productPulls(op1, opPct); rem -= q1 * Math.round(op1.price * 100); }
+
+      var cand = {
+        items: items,
+        pulls: pulls,
+        spendCents: budgetCents - rem,
+        spend: (budgetCents - rem) / 100,
+        remaining: rem / 100
+      };
+      if (!best ||
+          cand.pulls > best.pulls + 1e-9 ||
+          (Math.abs(cand.pulls - best.pulls) <= 1e-9 && cand.spend < best.spend)){
+        best = cand;
+      }
+    }
+
+    consider(false, false);
+    consider(true, false);
+    consider(false, true);
+    consider(true, true);
+
+    return best || { items:[], pulls:0, spendCents:0, spend:0, remaining:budgetUsd };
+  }
+
+  // Leviathan override: best-value $500 basket plus hand-picked OP packs.
+  // Packs are normal (non-FT) and unlimited, so they simply stack.
+  function addPackOverrides(baseBasket, packs, opPct){
+    var items = baseBasket.items.slice();
+    var pulls = baseBasket.pulls;
+    var spendCents = baseBasket.spendCents;
+
+    Object.keys(packs).forEach(function(id){
+      var qty = packs[id] || 0;
+      if (qty <= 0) return;
+      var prod = catalogById(id);
+      if (!prod) return;
+      items.push({ prod:prod, qty:qty });
+      pulls += qty * productPulls(prod, opPct);
+      spendCents += qty * Math.round(prod.price * 100);
+    });
+
+    return {
+      items: items,
+      pulls: pulls,
+      spendCents: spendCents,
+      spend: spendCents / 100,
+      remaining: 0
+    };
+  }
+
+  // The monthly basket for a matrix row. Leviathan adds the custom panel.
+  function basketForTier(tier, opPct){
+    var base = optimizeBasket(tier.cap, opPct);
+    return tier.key === "LEVIATHAN" ? addPackOverrides(base, state.levi, opPct) : base;
+  }
+
+  // Expand the monthly basket across the forecast window.
+  // The 30-day cycle is used for the Monthly Card and Monthly HH Pack.
+  function computeBasketWindow(basket, days, opPct){
+    var months = Math.max(1, Math.ceil(days / CYCLE_DAYS));
+    var factor = opPct / 100;
+    var cardQty = 0, hhQty = 0, opQty = 0, opSpend = 0;
+
+    basket.items.forEach(function(x){
+      if (x.prod.id === "monthly_card") cardQty += x.qty;
+      else if (x.prod.id === "hh_pack") hhQty += x.qty;
+      else { opQty += x.qty; opSpend += x.prod.price * x.qty; }
+    });
+
+    // Monthly Card: 200 ORU/day + 6 OP per 30-day renewal.
+    var cardPurchases = cardQty * months;
+    var cardOrundum = cardQty ? 200 * days : 0;
+    var cardOP = cardQty * months * 6;
+    var cardPulls = (cardOrundum + cardOP * OP_ORUNDUM * factor) / PULL_COST;
+
+    // Monthly HH Pack: 42 OP + 1 ten-roll, once per 30-day cycle.
+    var hhPulls = 0;
+    if (hhQty > 0){
+      var hhProd = catalogById("hh_pack");
+      hhPulls = hhQty * months * productPulls(hhProd, opPct);
+    }
+
+    // OP packs: unlimited, counted per cycle.
+    var opPulls = 0;
+    basket.items.forEach(function(x){
+      if (x.prod.id === "monthly_card" || x.prod.id === "hh_pack") return;
+      opPulls += x.qty * months * productPulls(x.prod, opPct);
+    });
+
+    return {
+      months: months,
+      cardQty: cardQty,
+      cardPurchases: cardPurchases,
+      cardOP: cardOP,
+      cardPulls: cardPulls,
+      hhQty: hhQty,
+      hhPulls: hhPulls,
+      opQty: opQty,
+      opSpend: opSpend,
+      opPulls: opPulls,
+      totalPulls: cardPulls + hhPulls + opPulls,
+      perMonthUsd: basket.spend,
+      windowUsd: basket.spend * months
+    };
+  }
+
+  /* forecast computation */
+  function computeState(){
+    var arch = ARCH[state.arch];
+    var now = new Date();
+    var end = new Date(state.endDate + "T00:00:00");
+    var cal = calendarInfo(now, end);
+
+    var monthLogin = cal.months.length;
+    var futureCount = Math.max(0, cal.months.length - 1);
+    var monthGreen = cal.months.length;
+
+    var dailyOrundum = cal.days * 100;
+    var weeklyOrundum = cal.weeks * 500;
+    var annihilationOrundum = cal.weeks * 1800;
+    var greenCertOrundum = monthGreen * 600;
+
+    var invOrundum = state.orundum;
+    var invTickets = state.hh1 + state.hh10 * 10;
+    var certResult = calcYellowCertPulls(state.certs, state.shop, futureCount);
+    var certPulls = certResult.pulls;
+    var archetypeBonus = arch.freePulls;
+
+    var requiredCopies = Math.max(0, state.pot - state.curPot);
+    var spark = null;
+    if (arch.spark && state.avail !== "ABSENT"){
+      spark = { pullsPerRedemption: arch.spark, copiesPerRedemption: 1, maxRedemptions: 1 };
+    }
+
+    var probTarget = state.mode === "potential"
+      ? (state.avail === "ABSENT" ? 0 : state.prob)
+      : (state.avail === "ABSENT" ? 0 : arch.rateUp);
+    var guaranteeAt = state.avail === "ABSENT" ? null : arch.guaranteeAt;
+    var startPity = arch.isolated ? 0 : Math.min(98, Math.max(0, state.pity));
+
+    // Each matrix row is the best-value basket at that tier's monthly cap.
+    // Rows are monthly profiles; the banner window only scales the projection.
+    var tiers = TIERS.map(function(t, i){
+      var basket = basketForTier(t, state.opPct);
+      var bundle = computeBasketWindow(basket, cal.days, state.opPct);
+
+      var invOPPulls = state.op > 0
+        ? (state.op * OP_ORUNDUM * (state.opPct / 100)) / PULL_COST
+        : 0;
+
+      var farmingPulls = (dailyOrundum + weeklyOrundum + annihilationOrundum) / PULL_COST;
+      var monthlyPulls = monthLogin;
+      var greenPulls = greenCertOrundum / PULL_COST + monthGreen * 4;
+      var inventoryPulls = invOrundum / PULL_COST + invTickets;
+
+      var lines = [
+        { key:"farming",  label:"DAILY / WEEKLY / ANNIHILATION", meta: fmt(cal.days) + "d × 100 + " + fmt(cal.weeks) + "w × (500 + 1 800)", value:farmingPulls },
+        { key:"login",    label:"MONTHLY LOGIN PERMIT",         meta: monthLogin + " eligible calendar month(s) × 1 permit", value:monthlyPulls },
+        { key:"green",    label:"GREEN CERT SHOP · TIER 1",     meta: monthGreen + " month(s) × (600 ORU + 4 permits)", value:greenPulls },
+        { key:"inventory",label:"INVENTORY ORUNDUM + TICKETS",  meta: fmt(invOrundum) + " ORU + " + invTickets + " permits", value:inventoryPulls }
+      ];
+      if (invOPPulls > 0) lines.push({ key:"invop", label:"INVENTORY OP · " + state.opPct + "%", meta: fmt(state.op) + " OP × 180 ORU ÷ 600", value:invOPPulls });
+      if (bundle.cardQty > 0) lines.push({ key:"card", label:"MONTHLY CARD", meta: fmt(cal.days) + "d × 200 ORU + " + bundle.cardOP + " OP (" + bundle.cardPurchases + " renewal)", value:bundle.cardPulls });
+      if (bundle.hhPulls > 0) lines.push({ key:"packs", label:"MONTHLY HH PACK", meta: bundle.months + " cycle(s) × 1/30d · 42 OP + 1 ten-roll", value:bundle.hhPulls });
+      if (bundle.opPulls > 0) lines.push({ key:"op", label:"OP PACKS · " + state.opPct + "%", meta: "best-value fill · $" + bundle.opSpend.toFixed(2) + "/mo × " + bundle.months + " cycle(s)", value:bundle.opPulls });
+      lines.push({ key:"certs", label:"YELLOW CERTS", meta: fmt(state.certs) + " certs · " + (state.shop > 0 ? "Tier " + state.shop + " cleared" : "from Tier 1") + " (" + fmt(certResult.remaining) + " unspent)", value:certPulls });
+      if (archetypeBonus > 0) lines.push({ key:"arch", label:"ARCHETYPE BONUS", meta: "free 10-pull + 14 daily free pulls", value:archetypeBonus });
+
+      var total = Math.floor(lines.reduce(function(a, l){ return a + l.value; }, 0));
+      var sparkAtTier = sparkBonusAt(total, spark);
+
+      var purchases = basket.items.map(function(x){
+        return {
+          name: x.prod.name.toUpperCase() + (x.qty > 1 ? " ×" + x.qty : ""),
+          meta: "$" + x.prod.price.toFixed(2) + "/mo"
+        };
+      });
+
+      // Monthly profile: recurring income + the monthly basket. One-time
+      // inventory, cert stock and archetype freebies are excluded.
+      var monthlyNatural = (farmingPulls + monthlyPulls + greenPulls) / bundle.months;
+      var monthlyBasket = (bundle.cardPulls + bundle.hhPulls + bundle.opPulls) / bundle.months;
+      var monthlyPulls = monthlyNatural + monthlyBasket;
+
+      return {
+        tier:t, index:i, lines:lines, total:total,
+        purchases:purchases,
+        basket:basket,
+        bundle:bundle,
+        monthlySpend:basket.spend,
+        monthlyPulls:monthlyPulls,
+        sparkAtTier:sparkAtTier
+      };
+    });
+
+    var maxTotal = Math.max.apply(null, tiers.map(function(t){ return t.total; }));
+    var horizon = Math.min(900, Math.max(350, Math.ceil(maxTotal) + 40));
+
+    var dp = runPity({
+      required: requiredCopies, probTarget: probTarget, startPity: startPity,
+      spark: spark, guaranteeAt: guaranteeAt, maxPulls: horizon
+    });
+
+    var reqPulls = null;
+    for (var n = 0; n <= horizon; n++){
+      if (dp.success[n] >= state.confidence){ reqPulls = n; break; }
+    }
+
+    tiers.forEach(function(t){
+      var p = Math.min(t.total, horizon);
+      t.pullsInt = p;
+      t.prob = dp.success[p];
+      t.chanceTarget = dp.chanceTarget[p];
+      t.expected = dp.expected[p];
+      t.guaranteed = requiredCopies === 0 || (spark != null && t.sparkAtTier >= requiredCopies);
+      if (t.guaranteed) t.status = "GUARANTEED";
+      else if (t.prob >= state.confidence) t.status = "FEASIBLE";
+      else if (t.prob > 0.5) t.status = "LIKELY";
+      else t.status = "DEFICIT";
+    });
+
+    var benchmark = state.mode === "pulls"
+      ? state.targetPulls
+      : (reqPulls != null ? reqPulls : Math.ceil(maxTotal));
+
+    tiers.forEach(function(t){
+      t.delta = t.total - benchmark;
+      if (state.mode === "pulls"){
+        t.clear = t.total >= state.targetPulls;
+        if (arch.spark && t.total >= arch.spark && state.avail !== "ABSENT"){
+          t.status = "GUARANTEED";
+        } else {
+          t.status = t.clear ? "FEASIBLE" : "DEFICIT";
+        }
+      }
+    });
+
+    var clearTiers = tiers.filter(function(t){
+      return state.mode === "pulls" ? t.clear : (t.status === "FEASIBLE" || t.status === "GUARANTEED");
+    });
+    var minTier = clearTiers[0] || null;
+
+    var anySixCurve = anySixStarCurve(startPity, horizon);
+    var activeTier = tiers.filter(function(t){ return t.tier.key === state.selected; })[0] || tiers[0];
+    activeTier.selected = true;
+
+    return {
+      arch:arch, cal:cal, tiers:tiers, dp:dp, reqPulls:reqPulls, horizon:horizon,
+      benchmark:benchmark, clearTiers:clearTiers, minTier:minTier, activeTier:activeTier,
+      anySixCurve:anySixCurve, requiredCopies:requiredCopies, spark:spark,
+      probTarget:probTarget, startPity:startPity, monthLogin:monthLogin, monthGreen:monthGreen,
+      maxTotal:maxTotal
+    };
+  }
+
+  /* render */
+  function statusLabel(v){
+    if (v === "GUARANTEED") return "GUARANTEED";
+    if (v === "FEASIBLE") return "FEASIBLE";
+    if (v === "LIKELY") return "LIKELY";
+    return "DEFICIT";
+  }
+
+  var TIER_SHORT = {
+    monthly_card:"CARD", hh_pack:"HH PACK", op130:"OP130", op66:"OP66",
+    op40:"OP40", op20:"OP20", op6:"OP6", op1:"OP1"
+  };
+
+  function tierRow(t){
+    var mode = state.mode;
+    var pctFill = Math.min(100, (t.total / (Math.max(view.maxTotal, view.benchmark) * 1.06)) * 100);
+    var tick = Math.min(100, (view.benchmark / (Math.max(view.maxTotal, view.benchmark) * 1.06)) * 100);
+    var badge = '<span class="badge ' + t.status.toLowerCase() + '"><span class="d"></span>' + statusLabel(t.status) + '</span>';
+    var start = (view.minTier && view.minTier.tier.key === t.tier.key) ? '<span class="starthere">START</span>' : '';
+    var chance = mode === "potential"
+      ? '<span class="num chance"><b>' + pct(t.prob) + '</b><i>P(TARGET)</i></span>'
+      : '<span class="num chance"><b>' + (t.delta >= 0 ? "+" : "−") + fmt(Math.abs(t.delta)) + '</b><i>' + (t.delta >= 0 ? "surplus" : "short") + '</i></span>';
+    var basketLabel = t.basket.items.length
+      ? t.basket.items.map(function(x){ return (TIER_SHORT[x.prod.id] || x.prod.id) + "×" + x.qty; }).join(" · ")
+      : "NATURAL ONLY";
+
+    return '<button class="tier' + (t.selected ? " sel" : "") + '" data-tier="' + t.tier.key + '" style="--c:' + t.tier.color + '">' +
+      '<span class="t-top">' +
+        '<span class="tname">' + t.tier.key + start + '</span>' +
+        badge +
+      '</span>' +
+      '<span class="trule">' + t.tier.rule + '</span>' +
+      '<span class="tspend"><b>$' + t.monthlySpend.toFixed(2) + '/mo</b> · ' + fmt1(t.monthlyPulls) + ' pulls/mo</span>' +
+      '<span class="track"><span class="fill" style="--w:' + pctFill + '%;--c:' + t.tier.color + '"></span><span class="tick" style="--t:' + tick + '%"></span></span>' +
+      '<span class="projmeta">' + basketLabel + '</span>' +
+      '<span class="t-foot">' +
+        '<span class="num total"><b>' + fmt(t.total) + '</b><i>PULLS · ' + view.cal.days + 'D</i></span>' +
+        chance +
+      '</span>' +
+    '</button>';
+  }
+
+  function renderHead(){
+    var cal = view.cal, arch = view.arch;
+    var hm = $("#headMeta");
+    if (hm) hm.innerHTML =
+      '<span>' + t("head.archetype","ARCHETYPE") + ' <b>' + arch.name + '</b></span><span class="sep">/</span>' +
+      '<span>' + (state.mode === "pulls" ? t("step1.modePulls","TARGET PULLS") + ' <b>' + fmt(state.targetPulls) + ' PULLS</b>' : t("head.potential","POTENTIAL") + ' <b>' + state.pot + '</b>' + (state.curPot > 0 ? ' · ' + t("step1.currentPot","FROM") + ' <b>' + state.curPot + '</b>' : '') + ' · ' + t("head.conf","CONF") + ' <b>' + Math.round(state.confidence*100) + '%</b>') + '</span>' +
+      '<span class="sep">/</span><span>' + t("head.ends","ENDS") + ' <b>' + isoToDMY(state.endDate) + '</b></span>';
+
+    var minLabel = view.minTier ? view.minTier.tier.key : "NONE";
+    var minSub = view.minTier
+      ? (state.mode === "pulls" ? fmt(view.minTier.total) + " pulls" : pct(view.minTier.prob) + " at " + Math.round(state.confidence*100) + "% conf")
+      : "no tier clears";
+    $("#headStats").innerHTML =
+      '<div class="hstat"><span>DAYS LEFT</span><b>' + fmt(cal.days) + '</b><small>' + fmt(cal.weeks) + ' weekly resets</small></div>' +
+      '<div class="hstat"><span class="hstat-label">BENCHMARK<button class="info-trigger" type="button" data-info="benchmark" aria-label="Detail benchmark"></button></span><b>' + fmt(view.benchmark) + '</b><small>' + (state.mode === "pulls" ? "target pulls" : "pulls @ confidence") + '</small></div>' +
+      '<div class="hstat"><span>MIN VIABLE TIER</span><b class="acc">' + minLabel + '</b><small>' + minSub + '</small></div>' +
+      '<div class="hstat"><span>TIERS CLEARING</span><b class="ok">' + view.clearTiers.length + '/6</b><small>' + (state.mode === "pulls" ? "target reached" : "confidence met") + '</small></div>';
+
+    $("#targetState").textContent = arch.name;
+    $("#routeState").textContent = state.opPct + "% OP";
+    $("#modeChip").textContent = state.mode === "pulls" ? "PULLS · " + fmt(state.targetPulls) : "POTENTIAL · " + Math.round(state.confidence*100) + "%";
+    $("#matrixSub").textContent = state.mode === "pulls"
+      ? "MONTHLY BASKET PROFILES · F2P → LEVIATHAN · TARGET " + fmt(state.targetPulls) + " PULLS"
+      : "MONTHLY BASKET PROFILES · F2P → LEVIATHAN · CONFIDENCE " + Math.round(state.confidence*100) + "%";
+    $("#pityEval").textContent = "EVALUATED @ " + view.activeTier.tier.key + "·" + fmt(view.activeTier.total) + " PULLS";
+  }
+
+  function renderMatrix(){
+    var label;
+    if (state.mode === "pulls"){
+      label = view.clearTiers.length + " OF 6 REACH TARGET";
+    } else {
+      label = view.clearTiers.length + " OF 6 MEET CONFIDENCE";
+    }
+    $("#matrixBadgeLabel").textContent = label;
+    $("#matrixBadge").className = "badge " + (view.clearTiers.length ? "feasible" : "deficit");
+    $("#tiers").innerHTML = view.tiers.map(tierRow).join("");
+    $("#outlookTiers").innerHTML = view.tiers.map(function(t){
+      return '<button class="tier-pill' + (t.selected ? " on" : "") + '" type="button" data-tier="' + t.tier.key + '" style="--c:' + t.tier.color + '"><span class="d"></span>' + t.tier.key + '</button>';
+    }).join("");
+  }
+
+  function renderBreakdown(){
+    var t = view.activeTier;
+    var total = t.total;
+    $("#breakdownPanel").style.setProperty("--c", t.tier.color);
+    $("#bdTier").innerHTML = '<span class="sw"></span><span>' + t.tier.key + '</span>';
+    $("#bdSub").textContent =
+      "$" + t.monthlySpend.toFixed(2) + "/MO · " + fmt1(t.monthlyPulls) + " PULLS/MO · " +
+      (state.mode === "pulls"
+        ? "BENCHMARK " + fmt(state.targetPulls)
+        : "REQ @ " + Math.round(state.confidence*100) + "% " + (view.reqPulls != null ? fmt(view.reqPulls) : "—"));
+
+    $("#outlookState").textContent = t.tier.key;
+    $("#leviPanel").style.display = state.selected === "LEVIATHAN" ? "block" : "none";
+
+    var rows = t.lines.map(function(l){
+      var w = total > 0 ? Math.min(100, (l.value / total) * 100) : 0;
+      return '<div class="bd-row">' +
+        '<span class="bd-lab"><b>' + l.label + '</b><span>' + l.meta + '</span></span>' +
+        '<span class="bd-bar"><i style="--w:' + w + '%;--c:' + t.tier.color + '"></i></span>' +
+        '<span class="bd-val">' + fmt1(l.value) + '</span>' +
+      '</div>';
+    }).join("");
+
+    var purchase = t.purchases.length
+      ? t.purchases.map(function(p){ return p.name; }).join(" · ")
+      : "no purchases · F2P";
+
+    $("#bdBody").innerHTML = rows +
+      '<div class="bd-total"><span>TOTAL PROJECTED · ' + esc(purchase.toUpperCase()) + '</span><b>' + fmt(total) + '<small>pulls</small></b></div>';
+  }
+
+  function renderPity(){
+    var tier = view.activeTier;
+    var p = Math.min(tier.pullsInt, view.horizon);
+    var any = view.anySixCurve[p];
+    var chance = tier.chanceTarget;
+    var conf = tier.prob;
+    var req = view.reqPulls;
+
+    $("#pityGrid").innerHTML =
+      '<div class="pity-cell"><span>CHANCE ANY 6★</span><b>' + pct(any) + '</b><small>within ' + fmt(p) + ' pulls</small></div>' +
+      '<div class="pity-cell"><span>CHANCE TARGET COPY</span><b>' + pct(chance) + '</b><small>≥1 copy · ' + (state.mode === "potential" ? pct(view.probTarget) + " of 6★" : "archetype rate-up") + '</small></div>' +
+      '<div class="pity-cell"><span>P(REACH ' + Math.round(state.confidence*100) + '%)</span><b style="color:' + (conf >= state.confidence ? "var(--success)" : "var(--fg)") + '">' + pct(conf) + '</b><small>' + (view.requiredCopies === 0 ? t("pity.cell.owned","target already owned") : t("pity.cell.needed","{n} cop{y} needed").replace("{n}", view.requiredCopies).replace("{y}", view.requiredCopies > 1 ? "ies" : "y")) + '</small></div>' +
+      '<div class="pity-cell"><span>PULLS @ CONF</span><b>' + (req != null ? fmt(req) : "—") + '</b><small>' + (req != null ? "minimum for " + Math.round(state.confidence*100) + "%" : "beyond " + view.horizon + " pulls") + '</small></div>';
+
+    var notes = [];
+    if (!view.arch.isolated && view.startPity > 0) notes.push(t("note.inheritedPity","Inherited pity {n} carried into the curve (shared group).").replace("{n}", view.startPity));
+    if (view.arch.isolated) notes.push(t("note.isolatedPity","Isolated pity — inherited counter ignored, curve starts at 0."));
+    if (view.spark) notes.push(t("note.spark","Spark: {n} pulls → 1 deterministic copy (Spark shop limit: 1).").replace("{n}", view.spark.pullsPerRedemption));
+    if (view.arch.guaranteeAt) notes.push(t("note.guarantee","Guarantee rule: after pull {n}, the next 6★ is the target.").replace("{n}", view.arch.guaranteeAt));
+    if (state.avail === "ABSENT") notes.push(t("note.absent","Target marked ABSENT — probability and spark redemption are zero."));
+    if (!notes.length) notes.push(t("note.none","No hard pity or spark on this archetype — probability only."));
+    if (view.requiredCopies > 0) notes.push(t("note.expected","Expected copies @{p} pulls: {e} of {r} required — supporting info, not the badge source.").replace("{p}", fmt(p)).replace("{e}", fmt1(t.expected)).replace("{r}", view.requiredCopies));
+
+    $("#pityNote").innerHTML = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="currentColor"/><path d="M6 5v4M6 3v.6" stroke="currentColor" stroke-linecap="round"/></svg><span>' + esc(notes.join(" ")) + '</span>';
+    $("#pitySub").textContent = "DP · EXACT DISTRIBUTION · " + (state.mode === "pulls" ? t("pity.sub.pulls","RATE-UP INFO") : t("pity.sub.potential","POTENTIAL") + " " + state.pot + (state.curPot > 0 ? " " + t("step1.currentPot","FROM") + " " + state.curPot : "") + " · " + view.requiredCopies + " " + t("pity.sub.copyReq","COPY REQ"));
+  }
+
+  function renderStep(){
+    var step = state.step || 1;
+    $$(".step-pane").forEach(function(p){
+      p.classList.toggle("is-active", +p.getAttribute("data-pane") === step);
+    });
+    $$("#steps .step").forEach(function(b){
+      var n = +b.getAttribute("data-step");
+      b.classList.toggle("is-active", n === step);
+      b.classList.toggle("is-done", n < step);
+      if (n === step) b.setAttribute("aria-current", "step");
+      else b.removeAttribute("aria-current");
+    });
+    var se = $("#stepEyebrow");
+    if (se) se.textContent = "/FORECAST · " + t("head.step","STEP") + " 0" + step + " " + t("head.of","OF") + " 04 · " + t("step." + ["target","resources","matrix","outlook"][step - 1], STEP_NAMES[step - 1]);
+    var fp = $("#flowProgress");
+    if (fp) fp.textContent = t("head.step","STEP") + " 0" + step + " / 04";
+    $("#backBtn").style.visibility = step === 1 ? "hidden" : "visible";
+    $("#nextBtn").style.display = step === 4 ? "none" : "inline-flex";
+    $("#nextBtn").textContent = step === 3 ? "OPEN OUTLOOK" : "CONTINUE";
+    $$(".flow-actions .final").forEach(function(b){
+      b.style.display = step === 4 ? "inline-flex" : "none";
+    });
+  }
+
+  function setStep(step){
+    state.step = Math.max(1, Math.min(4, step));
+    renderStep();
+    if (window.scrollTo) window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function render(){
+    view = computeState();
+    renderHead();
+    renderPotHints();
+    renderMatrix();
+    renderBreakdown();
+    renderPity();
+    renderLeviPanel();
+    renderStep();
+    saveState();
+  }
+
+  /* Current vs target potential readout (Step 01) */
+  function renderPotHints(){
+    var cur = $("#curPotHint"), tgt = $("#potHint");
+    if (!cur || !tgt) return;
+    var need = Math.max(0, state.pot - state.curPot);
+    cur.innerHTML = state.curPot === 0
+      ? "<b>0</b> = " + t("step1.curPotHint.none", "target not owned yet.")
+      : t("step1.curPotHint.owned", "Owned at POT {pot}.").replace("{pot}", "<b>" + state.curPot + "</b>");
+    tgt.innerHTML = need === 0
+      ? t("step1.potHint.done", "Already at target — 0 copies needed, all tiers GUARANTEED.")
+      : t("step1.potHint.need", "{n} cop{y} needed from POT {cur}.")
+          .replace("{n}", "<b>" + need + "</b>")
+          .replace("{y}", need > 1 ? "ies" : "y")
+          .replace("{cur}", state.curPot);
+  }
+
+  /* Leviathan custom OP-pack panel readout */
+  function renderLeviPanel(){
+    var container = $("#leviReadout");
+    if (!container) return;
+    var months = Math.max(1, Math.ceil(view.cal.days / CYCLE_DAYS));
+    var extraSpend = 0, extraPulls = 0, qty = 0;
+
+    Object.keys(state.levi).forEach(function(id){
+      var n = state.levi[id] || 0;
+      if (n <= 0) return;
+      var prod = catalogById(id);
+      if (!prod) return;
+      qty += n;
+      extraSpend += n * prod.price;
+      extraPulls += n * productPulls(prod, state.opPct);
+    });
+
+    var levi = TIERS.find(function(t){ return t.key === "LEVIATHAN"; });
+    var basket = basketForTier(levi, state.opPct);
+    var bundle = computeBasketWindow(basket, view.cal.days, state.opPct);
+
+    $("#leviState").textContent = extraSpend > 0 ? "+$" + extraSpend.toFixed(2) + "/mo" : "NO ADD-ON";
+
+    var warn = "";
+    if (state.levi.op130 > 0 && state.levi.op20 === 0){
+      warn = '<br><span class="warn">OP130 is 0.390 pulls/$ · OP20 is 0.400 — OP130 saves taps, not money.</span>';
+    }
+
+    container.innerHTML =
+      '<b>MONTHLY</b> · +$' + extraSpend.toFixed(2) + '/mo · +' +
+        fmt1(extraPulls) + ' pulls/mo from ' + qty + ' custom pack(s)' +
+      '<br><b>LEVIATHAN ROW</b> · $' + basket.spend.toFixed(2) + '/mo · ' +
+        fmt1(bundle.totalPulls / bundle.months) + ' pulls/mo' +
+      '<br><b>' + months + ' CYCLE(S)</b> · ' + fmt1(bundle.totalPulls) + ' pulls projected' +
+      warn;
+  }
+
+  /* inputs */
+  function num(el, key, min, max){
+    el.addEventListener("input", function(){
+      var v = parseFloat(el.value);
+      if (isNaN(v)) return;
+      if (typeof min === "number") v = Math.max(min, v);
+      if (typeof max === "number") v = Math.min(max, v);
+      state[key] = v;
+      schedule();
+    });
+    el.addEventListener("blur", function(){
+      el.value = state[key];
+      render();
+    });
+  }
+
+  var raf = null;
+  function schedule(){
+    if (raf) return;
+    raf = requestAnimationFrame(function(){ raf = null; render(); });
+  }
+
+  function syncPityField(){
+    var arch = ARCH[state.arch];
+    var input = $("#fPity");
+    input.disabled = arch.isolated;
+    $("#pityFlag").textContent = arch.isolated ? "IGNORED · ISOLATED" : "SHARED PITY";
+    $("#pityHint").innerHTML = arch.isolated
+      ? "This archetype uses an <b>isolated pity group</b> — the inherited counter is not applied."
+      : "Inherited from the shared pity group; carried into the DP curve as the starting counter.";
+  }
+
+  function syncMode(){
+    $$("#modeSeg button").forEach(function(b){
+      b.setAttribute("aria-pressed", String(b.getAttribute("data-mode") === state.mode));
+    });
+    $("#pullsFields").style.display = state.mode === "pulls" ? "block" : "none";
+    $("#potFields").style.display = state.mode === "potential" ? "block" : "none";
+    var arch = ARCH[state.arch];
+    if (state.mode === "pulls"){
+      $("#pullsHintLabel").textContent = arch.spark ? t("sync.sparkLabel.spark","SPARK {n}").replace("{n}", arch.spark) : t("sync.sparkLabel.manual","MANUAL");
+      $("#pullsHint").innerHTML = arch.spark
+        ? t("sync.sparkThreshold","Spark threshold for {arch} is <b>{n} pulls</b>.").replace("{arch}", arch.name).replace("{n}", arch.spark)
+        : t("sync.noSpark","No spark on {arch} — the target is purely a pull count.").replace("{arch}", arch.name);
+    }
+  }
+
+  function syncArch(){
+    var arch = ARCH[state.arch];
+    $("#archHint").innerHTML = '<b>' + arch.name + '</b> · ' + arch.desc + '.';
+    $("#targetState").textContent = arch.name;
+    syncPityField();
+    syncMode();
+  }
+
+  function syncProb(){
+    var input = $("#fProb");
+    var absent = state.avail === "ABSENT";
+    input.disabled = absent;
+    if (absent){
+      input.value = 0;
+      $("#probHint").innerHTML = t("step1.probHintAbsent","Target <b>ABSENT</b> — chance is forced to 0 and Spark redemption is disabled.");
+    } else {
+      if (parseFloat(input.value) !== Math.round(state.prob*100)) input.value = Math.round(state.prob*100);
+      $("#probHint").innerHTML = t("step1.probHint","Single-operator chance after a 6★. Split rate-ups divide the pool (50% / 2 = <b>25%</b>).");
+    }
+  }
+
+  function bind(){
+    $("#fArch").addEventListener("change", function(){
+      state.arch = this.value;
+      var arch = ARCH[state.arch];
+      if (arch.spark) state.targetPulls = arch.spark;
+      syncArch(); render();
+    });
+    $("#fEnd").addEventListener("change", function(){
+      var iso = dmyToISO(this.value);
+      if (!iso){
+        this.parentNode.classList.add("invalid");
+        $("#endHint").innerHTML = t("endHint.invalid","<b>Use DD/MM/YYYY</b> · example 31/12/2026");
+        return;
+      }
+      this.parentNode.classList.remove("invalid");
+      state.endDate = iso;
+      this.value = isoToDMY(iso);
+      $("#endHint").innerHTML = "";
+      render();
+    });
+    $("#fEnd").addEventListener("input", function(){
+      if (dmyToISO(this.value)){
+        this.parentNode.classList.remove("invalid");
+        $("#endHint").innerHTML = "";
+      }
+    });
+
+    $$("#modeSeg button").forEach(function(b){
+      b.addEventListener("click", function(){ state.mode = b.getAttribute("data-mode"); syncMode(); render(); });
+    });
+    num($("#fPulls"), "targetPulls", 1, 2000);
+
+    $("#fCurPot").addEventListener("change", function(){ state.curPot = +this.value; render(); });
+    $("#fPot").addEventListener("change", function(){ state.pot = +this.value; render(); });
+    $("#fAvail").addEventListener("change", function(){ state.avail = this.value; syncProb(); render(); });
+    $("#fProb").addEventListener("input", function(){
+      var v = parseFloat(this.value);
+      if (isNaN(v)) return;
+      state.prob = Math.max(0, Math.min(100, v)) / 100;
+      render();
+    });
+    $("#fProb").addEventListener("blur", function(){ this.value = Math.round(state.prob * 100); });
+    $$("#confChips button").forEach(function(b){
+      b.addEventListener("click", function(){
+        state.confidence = parseFloat(b.getAttribute("data-conf"));
+        $$("#confChips button").forEach(function(x){ x.setAttribute("aria-pressed", String(x === b)); });
+        render();
+      });
+    });
+
+    num($("#fOrundum"), "orundum", 0);
+    num($("#fOP"), "op", 0);
+    num($("#fHH1"), "hh1", 0);
+    num($("#fHH10"), "hh10", 0);
+    num($("#fCerts"), "certs", 0);
+    num($("#fPity"), "pity", 0, 98);
+    $("#fShop").addEventListener("change", function(){ state.shop = +this.value; render(); });
+
+    $("#fOPPct").addEventListener("input", function(){
+      state.opPct = +this.value;
+      $("#fOPPctVal").textContent = state.opPct + "%";
+      $("#routeState").textContent = state.opPct + "% OP";
+      schedule();
+    });
+
+    function numLevi(el, id){
+      el.addEventListener("input", function(){
+        var v = parseFloat(el.value);
+        if (isNaN(v)) return;
+        state.levi[id] = Math.max(0, Math.min(99, Math.round(v)));
+        schedule();
+      });
+      el.addEventListener("blur", function(){ el.value = state.levi[id]; render(); });
+    }
+    numLevi($("#fLevi130"), "op130");
+    numLevi($("#fLevi66"), "op66");
+    numLevi($("#fLevi40"), "op40");
+    numLevi($("#fLevi20"), "op20");
+
+    $("#tiers").addEventListener("click", function(e){
+      var row = e.target.closest(".tier");
+      if (!row) return;
+      state.selected = row.getAttribute("data-tier");
+      render();
+    });
+
+    $("#outlookTiers").addEventListener("click", function(e){
+      var pill = e.target.closest(".tier-pill");
+      if (!pill) return;
+      state.selected = pill.getAttribute("data-tier");
+      render();
+    });
+
+    $$("#steps .step").forEach(function(b){
+      b.addEventListener("click", function(){ setStep(+b.getAttribute("data-step")); });
+    });
+    $("#backBtn").addEventListener("click", function(){ setStep(state.step - 1); });
+    $("#nextBtn").addEventListener("click", function(){ setStep(state.step + 1); });
+
+    $$("[data-collapse]").forEach(function(btn){
+      btn.addEventListener("click", function(){
+        var card = $("#" + btn.getAttribute("data-collapse"));
+        card.classList.toggle("collapsed");
+      });
+    });
+
+    $$("[data-toast]").forEach(function(el){
+      el.addEventListener("click", function(e){ e.preventDefault(); toast(el.getAttribute("data-toast")); });
+    });
+
+    var ls = $("#langSwitch");
+    if (ls){
+      ls.querySelectorAll("button[data-lang]").forEach(function(b){
+        b.addEventListener("click", function(){
+          applyI18n(b.getAttribute("data-lang"));
+          var ps = $("#profileSelect");
+          if (ps) ps.value = "custom";
+        });
+      });
+    }
+
+    var ps = $("#profileSelect");
+    if (ps){
+      ps.addEventListener("change", function(){
+        var v = ps.value;
+        if (v === "all-en"){ applyI18n("en"); applyExplainLang("en"); }
+        else if (v === "all-id"){ applyI18n("id"); applyExplainLang("id"); }
+        else if (v === "mixed-en-id"){ applyI18n("en"); applyExplainLang("id"); }
+        else if (v === "mixed-id-en"){ applyI18n("id"); applyExplainLang("en"); }
+        // custom: do nothing, individual toggles drive it
+      });
+    }
+
+
+  }
+
+  /* modals / auth */
+  var overlay = $("#overlay");
+  var openedModal = null;
+
+  function openModal(id){
+    if (openedModal) closeModal();
+    openedModal = id;
+    $("#" + id).classList.add("show");
+    overlay.classList.add("show");
+    document.body.classList.add("locked");
+  }
+  function closeModal(){
+    if (!openedModal) return;
+    $("#" + openedModal).classList.remove("show");
+    openedModal = null;
+    overlay.classList.remove("show");
+    document.body.classList.remove("locked");
+  }
+  overlay.addEventListener("click", closeModal);
+  $$("[data-close]").forEach(function(b){
+    b.addEventListener("click", function(){ closeModal(); });
+  });
+
+  // explanation language switch
+  $$(".explain-switch button[data-explain-lang]").forEach(function(b){
+    b.addEventListener("click", function(){
+      applyExplainLang(b.getAttribute("data-explain-lang"));
+      var ps = $("#profileSelect");
+      if (ps) ps.value = "custom";
+      if (window._lastInfoKey) openInfo(window._lastInfoKey);
+    });
+  });
+  document.addEventListener("keydown", function(e){
+    if (e.key === "Escape" && openedModal) closeModal();
+  });
+
+  function toast(msg){
+    var el = $("#toast");
+    el.textContent = msg;
+    el.classList.add("show");
+    clearTimeout(el._t);
+    el._t = setTimeout(function(){ el.classList.remove("show"); }, 2600);
+  }
+
+  /* explanation tooltips */
+  var INFO = {
+    "target-prob": {
+      kicker: "FIELD · TARGET PROBABILITY",
+      title: "P(TARGET | 6★)",
+      analogy: "Undian berlapis: dapat 6★ = lolos babak final. Angka ini = peluang menang babak final kalau sudah lolos.",
+      body: "<p>Ini peluang <b>bersyarat</b>: kalau 6★ sudah keluar, seberapa besar kemungkinan itu operator targetmu — bukan peluang 6★ itu sendiri.</p>" +
+            "<p>Kalau banner punya dua rate-up yang membagi 50%, peluang target tunggal jadi <b>25%</b>. Default 35% adalah asumsi satu operator di slot rate-up.</p>" +
+            "<p>Kalau target <b>ABSENT</b>, angka ini dipaksa 0 dan spark dimatikan.</p>" +
+            "<p><b>Hubungan dengan CONFIDENCE:</b> ini adalah probabilitas dasar yang kemudian dibandingkan dengan ambang confidence untuk menilai apakah tier FEASIBLE (≥ confidence) atau DEFICIT (< confidence).</p>",
+      example: "6★ rata-rata keluar sekitar pull 35. Dengan 35%, peluang target per pull hanya sekitar 0,7%.\nP(TARGET) 35% @90% = 212 pull. P(TARGET) 35% @95% = 272 pull.",
+      impact: "P(TARGET) merupakan input utama DP: probabilitas 6★ adalah target copy. P(TARGET) >= confidenceTarget ? FEASIBLE : DEFICIT.",
+    },
+    "confidence": {
+      kicker: "FIELD · CONFIDENCE TARGET",
+      title: "CONFIDENCE TARGET",
+      analogy: "Target nilai ujian: \"mau yakin 90%\" berarti harus belajar sampai 9 dari 10 kemungkinan selesai.",
+      body: "<p>Ini <b>garis lulus</b>, bukan peluang. Kamu memilih seberapa yakin, mesin menghitung pull yang dibutuhkan.</p>" +
+            "<p>50% = seperti lempar koin. 90% = default yang aman. 95% = nyaris pasti, tapi jauh lebih mahal.</p>" +
+            "<p>Menaikkan confidence <b>tidak mengubah</b> peluang; ia hanya menaikkan target pull.</p>" +
+            "<p><b>Hubungan dengan P(TARGET│6★):</b> confidence adalah ambang yang mengecek apakah <b>kurva P(TARGET)</b> di total pull tier sudah mencapai ambang kepercayaan. Lebih tinggi confidence, semakin banyak pull yang dibutuhkan.</p>",
+      example: "50% → 70 pull\n80% → 153 pull\n90% → 212 pull\n95% → 272 pull\n\nP(TARGET) 35% @90% = 212 pull. P(TARGET) 35% @95% = 272 pull.",
+      impact: "FEASIBLE: P(TARGET) >= confidenceTarget. badge dan min tier. GUIDELINES: confirm viability di tiap tier.",
+    },
+    "mode": {
+      kicker: "FIELD · TARGET MODE",
+      title: "TARGET MODE",
+      analogy: "Menabung vs mengejar hadiah: “cukup nggak uangku?” vs “berapa peluang dapet hadiah?”",
+      body: "<p><b>TARGET PULLS</b> = apakah total pull yang bisa kamu kumpulkan sudah mencapai angka target (misal 300 untuk spark).</p>" +
+            "<p><b>TARGET POTENTIAL</b> = berapa peluang mendapatkan jumlah copy tertentu sebelum deadline.</p>" +
+            "<p>Badge ikut mode: PULLS membandingkan total; POTENTIAL membandingkan peluang dengan confidence.</p>",
+      example: "PULLS 300 → cek tier mana yang sampai 300 pull.\nPOTENTIAL 90% → cek peluang 1 copy.",
+      impact: "Semua badge, benchmark, angka kedua di kartu tier.",
+    },
+    "current-potential": {
+      kicker: "FIELD · CURRENT POTENTIAL",
+      title: "CURRENT POTENTIAL",
+      analogy: "“Aku sudah punya 1 duplikat” = mulai dari Pot 1, bukan dari nol.",
+      body: "<p>Pot yang <b>sudah kamu miliki</b> saat ini. Default <b>0</b> = operator belum dimiliki.</p>" +
+            "<p>Copy yang masih dibutuhkan = <b>Target Potential − Current Potential</b> (minimum 0).</p>" +
+            "<p>Kalau current sudah menyamai atau melewati target, kebutuhan copy jadi 0 dan semua tier <b>GUARANTEED</b>.</p>",
+      example: "Current 0, target 3 → butuh 3 copy.\nCurrent 1, target 3 → butuh 2 copy.\nCurrent 3, target 3 → 0 copy.",
+      impact: "required copies, P(TARGET), PULLS @ CONF, status GUARANTEED.",
+    },
+    "potential": {
+      kicker: "FIELD · TARGET POTENTIAL",
+      title: "TARGET POTENTIAL",
+      analogy: "“Aku mau Pot 3” = target akhir, bukan jumlah copy yang harus dibeli.",
+      body: "<p>Level Pot yang ingin dicapai. Copy yang dibutuhkan = <b>Target − Current Potential</b>.</p>" +
+            "<p>Menaikkan target membuat target lebih jauh, jadi butuh lebih banyak pull dan tier yang lebih mahal.</p>" +
+            "<p>Kalau spark banner menjamin copy sebelum target tercapai, tier bisa jadi <b>GUARANTEED</b>.</p>",
+      example: "Current 0 → target 1 = 1 copy.\nCurrent 1 → target 3 = 2 copy (bukan 3× pull).",
+      impact: "P(TARGET), PULLS @ CONF, status GUARANTEED.",
+    },
+    "availability": {
+      kicker: "FIELD · TARGET AVAILABILITY",
+      title: "TARGET AVAILABILITY",
+      analogy: "Rak toko: FEATURED = rak depan, OFF_BANNER = gudang, ABSENT = tidak dijual.",
+      body: "<p><b>FEATURED</b> = target di slot rate-up. <b>OFF_BANNER</b> = target hanya ada di pool 6★ biasa.</p>" +
+            "<p><b>ABSENT</b> = target tidak ada di banner. Ini mematikan peluang dan spark: semua tier jadi 0%.</p>" +
+            "<p>Untuk FEATURED dan OFF_BANNER, angka peluang tetap kamu isi lewat P(TARGET | 6★).</p>",
+      example: "ABSENT → semua tier DEFICIT 0%.",
+      impact: "P(TARGET), spark, guarantee, badge.",
+    },
+    "pity": {
+      kicker: "FIELD · CURRENT PITY",
+      title: "CURRENT PITY",
+      analogy: "Meteran parkir: makin lama tidak dapat 6★, makin besar peluang 6★ berikutnya.",
+      body: "<p>Ini counter berapa pull berturut-turut yang <b>belum</b> menghasilkan 6★.</p>" +
+            "<p>Setelah 49 miss, peluang 6★ perlahan naik. Counter reset ke 0 setiap kali 6★ keluar.</p>" +
+            "<p>Banner <b>LIMITED</b> dan <b>CROSSOVER</b> punya pity terisolasi, jadi counter ini diabaikan dan input dinonaktifkan.</p>",
+      example: "Pity 60 → peluang 6★ berikutnya jauh di atas dasar 2%.",
+      impact: "P(TARGET), CHANCE ANY 6★, PULLS @ CONF.",
+    },
+    "certs": {
+      kicker: "FIELD · YELLOW CERTS",
+      title: "YELLOW CERTS + SHOP TIER",
+      analogy: "Tukar poin: 10 cert = 1 pull, 18 = 2 pull, 40 = 5, 70 = 10, 120 = 20.",
+      body: "<p>Yellow cert ditukar jadi pull lewat shop. Shop punya tangga harga: tier bawah murah, tier atas mahal.</p>" +
+            "<p><b>SHOP TIER CLEARED</b> = tier yang sudah kamu beli bulan ini, jadi dilewati.</p>" +
+            "<p>Sisa cert bisa dipakai lagi di bulan berikutnya. Model ini <b>tidak</b> menambah income cert baru.</p>",
+      example: "180 cert, Tier 2 cleared → 21 pull, sisa 14 cert.",
+      impact: "Total pull, badge.",
+    },
+    "op-pct": {
+      kicker: "FIELD · OP CONVERSION",
+      title: "OP CONVERSION %",
+      analogy: "Tukar mata uang: 100% = semua OP ditukar; 50% = setengah disimpan untuk skin/sanity.",
+      body: "<p>Ini mengatur seberapa agresif Originite Prime diubah jadi Orundum untuk pull.</p>" +
+            "<p>Yang ikut terkena: OP di inventory, OP dari Monthly Card, HH Pack, dan OP packs.</p>" +
+            "<p>0% = OP tidak dipakai untuk pull sama sekali.</p>",
+      example: "100% → 45 OP = 13,5 pull.\n50% → 6,75 pull.",
+      impact: "pulls/mo, total pull, badge.",
+    },
+    "badge": {
+      kicker: "SECTION · TIER STATUS",
+      title: "STATUS TIER",
+      analogy: "Status pengiriman: pasti sampai / sesuai janji / kemungkinan / gagal.",
+      body: "<p><b>GUARANTEED</b> = spark banner menjamin copy sebelum deadline.</p>" +
+            "<p><b>FEASIBLE</b> = peluang target mencapai confidence pilihanmu.</p>" +
+            "<p><b>LIKELY</b> = peluang di atas 50%, tapi di bawah confidence.</p>" +
+            "<p><b>DEFICIT</b> = di bawah 50%.</p>",
+      example: "F2P 87,2% @90% → LIKELY.\nMINNOW 91,9% @90% → FEASIBLE.",
+      impact: "Kartu tier, START, TIERS CLEARING.",
+    },
+    "benchmark": {
+      kicker: "SECTION · BENCHMARK",
+      title: "BENCHMARK",
+      analogy: "Garis finish: semua tier dibandingkan ke garis ini.",
+      body: "<p>Mode <b>PULLS</b>: benchmark = target pull yang kamu masukkan.</p>" +
+            "<p>Mode <b>POTENTIAL</b>: benchmark = pull minimum untuk mencapai confidence.</p>" +
+            "<p>Delta di kartu = total pull − benchmark. Positif = surplus, negatif = short.</p>",
+      example: "Default 90% → benchmark 212 pull.\nF2P 190 = −22 (short).",
+      impact: "Delta kartu, MIN VIABLE TIER, advice.",
+    },
+    "pity-grid": {
+      kicker: "SECTION · PITY ESTIMATION",
+      title: "EMPAT ANGKA PITY",
+      analogy: "Empat pertanyaan beda: pernah dapat? dapat target? cukup yakin? butuh berapa?",
+      body: "<p><b>CHANCE ANY 6★</b> = peluang pernah dapat 6★ dalam pull tier ini.</p>" +
+            "<p><b>CHANCE TARGET COPY</b> = peluang dapat minimal 1 copy target.</p>" +
+            "<p><b>P(REACH x%)</b> = apakah tier aktif mencapai confidence.</p>" +
+            "<p><b>PULLS @ CONF</b> = pull minimum global untuk confidence, di luar tier mana pun.</p>",
+      example: "F2P 190 pull: any 6★ 100%, target copy 87,2%, PULLS @ CONF 212.",
+      impact: "Semua output probabilitas.",
+    },
+    "monthly-total": {
+      kicker: "SECTION · PULLS/MO VS TOTAL",
+      title: "BULANAN VS TOTAL",
+      analogy: "Gaji bulanan vs tabungan total sampai target tercapai.",
+      body: "<p><b>pulls/mo</b> = income berulang per bulan (farming, login, green cert, basket).</p>" +
+            "<p><b>total</b> = semua pull sampai window berakhir, termasuk inventory, cert, dan bonus archetype yang sekali saja.</p>" +
+            "<p>Badge memakai <b>total</b>, bukan pulls/mo.</p>",
+      example: "F2P: 29,6 pull/mo × 3 siklus ≈ 190 total.",
+      impact: "Persepsi kecepatan & harga tier.",
+    }
+  };
+
+  var infoSvg = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="currentColor"/><path d="M6 5v4M6 3v.6" stroke="currentColor" stroke-linecap="round"/></svg>';
+
+  $$(".info-trigger").forEach(function(btn){
+    btn.innerHTML = infoSvg;
+    btn.addEventListener("click", function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      openInfo(btn.getAttribute("data-info"));
+    });
+  });
+
+  function t(key, fallback){
+    var dict = (window.FV3_I18N || {})[window.FV3_UI_LANG || window.FV3_LANG || "en"] || {};
+    return (dict[key] != null) ? dict[key] : (fallback != null ? fallback : key);
+  }
+  function tExplain(key, fallback){
+    var dict = (window.FV3_I18N || {})[window.FV3_EXPLAIN_LANG || "en"] || {};
+    return (dict[key] != null) ? dict[key] : (fallback != null ? fallback : key);
+  }
+
+  function openInfo(key){
+    window._lastInfoKey = key;
+    var base = INFO[key] || {};
+    var d = {
+      kicker: tExplain("info." + key + ".kicker", base.kicker),
+      title: tExplain("info." + key + ".title", base.title),
+      analogy: tExplain("info." + key + ".analogy", base.analogy),
+      body: tExplain("info." + key + ".body", base.body),
+      example: tExplain("info." + key + ".example", base.example),
+      impact: tExplain("info." + key + ".impact", base.impact)
+    };
+    if (!d.title && !base.title) return;
+    $("#infoKicker").textContent = d.kicker;
+    $("#infoTitle").textContent = d.title;
+    $("#infoBody").innerHTML =
+      '<div class="info-section"><div class="info-lbl">ANALOGI</div><div class="info-analogy">' + d.analogy + '</div></div>' +
+      '<div class="info-section"><div class="info-lbl">CARA KERJA</div><div class="info-text">' + d.body + '</div></div>' +
+      '<div class="info-section"><div class="info-lbl">CONTOH ANGKA</div><div class="info-example">' + esc(d.example) + '</div><div class="info-note">Angka contoh dari snapshot — bukan hasil perhitunganmu.</div></div>' +
+      '<div class="info-section"><div class="info-lbl">PENGARUHNYA KE</div><div class="info-text">' + d.impact + '</div></div>';
+    openModal("infoModal");
+  }
+
+  /* boot */
+  function defaultDate(daysAhead){
+    var d = new Date();
+    d.setDate(d.getDate() + daysAhead);
+    return d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate());
+  }
+
+  state.endDate = defaultDate(90);
+  loadState();
+  hydrateInputs();
+
+  bind();
+  syncArch();
+  syncProb();
+  // init profile select value
+  (function(){
+    var ui = window.FV3_UI_LANG || "en";
+    var ex = window.FV3_EXPLAIN_LANG || ui;
+    var ps = $("#profileSelect");
+    if (!ps) return;
+    if (ui === "en" && ex === "en") ps.value = "all-en";
+    else if (ui === "id" && ex === "id") ps.value = "all-id";
+    else if (ui === "en" && ex === "id") ps.value = "mixed-en-id";
+    else if (ui === "id" && ex === "en") ps.value = "mixed-id-en";
+    else ps.value = "custom";
+  })();
+  render();
+
+  window.__PRTS__ = {
+    state: state,
+    compute: computeState,
+    dp: runPity,
+    arch: ARCH,
+    catalog: PRODUCT_CATALOG,
+    optimizeBasket: optimizeBasket,
+    computeBasketWindow: computeBasketWindow,
+    basketForTier: basketForTier
+  };
+})();
+</script>
+</body>
+</html>

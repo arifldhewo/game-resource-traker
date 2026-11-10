@@ -5,20 +5,19 @@ Standalone Arknights gacha forecast. No backend, no build step.
 ## Structure
 
 ```
-src/
-  index.html          # landing page
-  forecast.html       # the calculator (pahe build)
-  roadmap.html        # product roadmap
-  forecast-i18n.js    # i18n dictionary (EN/ID) + applyI18n()
-  CNAME               # custom domain for GitHub Pages
+src/        # source of truth (landing, forecast, roadmap, i18n, CNAME)
+docs/       # mirror of src/ for GitHub Pages (Pages only supports / or /docs)
+proto/      # original prototypes & reference
 ```
 
 ## Deploy to GitHub Pages
 
 1. Push this repo to GitHub.
 2. Repo → **Settings → Pages → Source**: "Deploy from a branch".
-3. Branch: `main`, folder: `/src`.
+3. Branch: `main`, folder: **`/docs`** (GitHub Pages does not support arbitrary folders like /src).
 4. Save. Site live at `https://<user>.github.io/<repo>/` (or custom domain).
+
+> Keep `docs/` in sync with `src/` before pushing (e.g. `cp -r src/* docs/`).
 
 ## Local preview
 
