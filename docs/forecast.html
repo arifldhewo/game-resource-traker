@@ -15,8 +15,8 @@
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
-<link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Rajdhani:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Rajdhani:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg:#090A0B; --card:#0E1012; --card-2:#111417; --inset:#0A0C0E;
@@ -25,15 +25,15 @@
     --accent:#E4A93C; --success:#4CB782; --danger:#E5533D; --amber:#C79A4E;
     --f2p:#7C848C; --goldfish:#5E8FA8; --dolphin:#5AA6C4; --whale:#E4A93C; --leviathan:#D9713F;
     --minnow:#B0BEC9; --radius:3px;
-    --font-display:"Saira Condensed","Oswald","Arial Narrow",sans-serif;
-    --font-body:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-    --font-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+    --font-display:"Rajdhani","Segoe UI",sans-serif;
+    --font-body:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    --font-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
   }
   *{box-sizing:border-box}
   html,body{margin:0}
   body{
     background:var(--bg); color:var(--fg); font-family:var(--font-body);
-    font-size:13px; line-height:1.45; -webkit-font-smoothing:antialiased; min-height:100vh;
+    font-size:15px; line-height:1.55; -webkit-font-smoothing:antialiased; min-height:100vh;
   }
   body::before{
     content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
@@ -86,7 +86,7 @@
   .signin svg{flex:none}
 
   /* shell */
-  .shell{position:relative;z-index:1;max-width:720px;margin:0 auto;padding:24px 20px 96px}
+  .shell{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 24px 96px}
 
   /* stepper */
   .flow-head{margin-bottom:16px}
@@ -107,7 +107,7 @@
 
   .pane-head{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin-bottom:12px}
   .pane-head .k{font-family:var(--font-mono);font-size:8.5px;letter-spacing:.13em;color:var(--accent);margin-bottom:5px}
-  .pane-head h2{margin:0;font-family:var(--font-display);font-size:23px;font-weight:600;letter-spacing:.04em;line-height:1.05;text-transform:uppercase}
+  .pane-head h2{margin:0;font-family:var(--font-display);font-size:26px;font-weight:600;letter-spacing:.03em;line-height:1.05;text-transform:uppercase}
   .pane-state{font-family:var(--font-mono);font-size:8.5px;letter-spacing:.1em;color:var(--muted-2);border:1px solid var(--border);padding:4px 7px;white-space:nowrap}
   .pane-right{display:flex;align-items:center;gap:7px;flex-wrap:wrap;justify-content:flex-end}
   .pane-body{display:flex;flex-direction:column;gap:12px}
@@ -138,11 +138,11 @@
   .pagehead{display:flex;align-items:flex-end;justify-content:space-between;gap:28px;flex-wrap:wrap;margin-bottom:18px}
   .eyebrow{display:flex;align-items:center;gap:8px;font-family:var(--font-mono);font-size:9.5px;letter-spacing:.14em;color:var(--muted);margin-bottom:8px}
   .eyebrow::before{content:"";width:14px;height:1px;background:var(--accent)}
-  h1{margin:0 0 8px;font-family:var(--font-display);font-size:30px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;line-height:1}
+  h1{margin:0 0 8px;font-family:var(--font-display);font-size:33px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;line-height:1}
   .headmeta{display:flex;flex-wrap:wrap;gap:5px 12px;font-family:var(--font-mono);font-size:10px;letter-spacing:.05em;color:var(--muted)}
   .headmeta b{color:var(--fg);font-weight:500}
   .headmeta .sep{color:#31363B}
-  .headstats{display:grid;grid-template-columns:repeat(4,1fr);align-items:stretch;border:1px solid var(--border);background:var(--card)}
+  .headstats{display:grid;grid-template-columns:repeat(3,1fr);align-items:stretch;border:1px solid var(--border);background:var(--card)}
   .hstat{padding:10px 16px 11px;border-right:1px solid var(--border);min-width:96px}
   .hstat:last-child{border-right:0}
   .hstat span{display:block;font-family:var(--font-mono);font-size:8.5px;letter-spacing:.12em;color:var(--muted-2);margin-bottom:5px}
@@ -440,26 +440,28 @@
   }
   @media (max-width:600px){
     .tierGrid{grid-template-columns:1fr}
+    .grid2{grid-template-columns:1fr}
     .pane-head{flex-direction:column;align-items:flex-start;gap:8px}
     .pane-right{justify-content:flex-start}
-    .pane-head h2{font-size:21px}
+    .pane-head h2{font-size:23px}
   }
   @media (max-width:760px){
     .topbar{padding:0 14px;gap:10px;height:52px}
     .neural,.divider-v{display:none}
     .nav{gap:2px}
     .nav a{padding:5px 8px;font-size:11px}
-    .shell{padding:16px 13px 28px}
-    h1{font-size:25px}
+    .shell{padding:16px 14px 28px}
+    h1{font-size:28px}
     .headstats{display:grid;grid-template-columns:1fr 1fr}
     .hstat{border-bottom:1px solid var(--border)}
     .hstat:nth-child(2n){border-right:0}
+    .hstat:nth-child(3){grid-column:1/-1;border-right:0;border-bottom:0}
     .panel-head{flex-direction:column;align-items:flex-start;gap:9px}
     .panel-head .right{width:100%;justify-content:space-between}
     .grid3{grid-template-columns:1fr 1fr}
     .modal{left:0;right:0;top:auto;bottom:0;width:auto;max-width:none;border-radius:14px 14px 0 0;transform:translateY(100%)}
     .modal.show{transform:none}
-    .term-body{font-size:10.5px}
+    .term-body{font-size:12px}
     .actionbar .actions{width:100%}
     .actionbar .actions .btn{flex:1;justify-content:center}
     .sheet{
@@ -471,6 +473,59 @@
     .sheet.show{transform:none}
     .grab{display:block;width:40px;height:3px;background:#3A4249;border-radius:2px;margin:9px auto 0}
   }
+  /* readability scale */
+  .nav a{font-size:13.5px}
+  .lang-switch button{font-size:10px}
+  .wordmark span{font-size:9.5px}
+  .step .sn{font-size:9.5px}
+  .step .sl{font-size:12.5px}
+  .pane-head .k{font-size:9.5px}
+  .pane-state,.flow-progress,.matrix-note,.select-hint,.outlook-picker .k,.tier-pill,.chip-mini,.panel-head .sub,.bd-title .sub,.actionbar .meta{font-size:10px}
+  .mini-head h3{font-size:14px}
+  .mini-head span{font-size:9.5px}
+  .headmeta{font-size:11px}
+  .hstat span,.hstat small{font-size:10px}
+  .hstat b{font-size:26px}
+  .card-head h2{font-size:14px}
+  .card-head .idx,.card-head .state{font-size:10px}
+  .field > label{font-size:10px}
+  .field > label i{font-size:9px}
+  .hint{font-size:10px;line-height:1.55}
+  .control input{font-size:14.5px;padding:9px 11px}
+  select.control{font-size:13px;padding:9px 11px}
+  .control .unit{font-size:9.5px}
+  .seg button,.chips button{font-size:11px}
+  .range-val{font-size:13px}
+  .switch .sw-txt{font-size:10.5px}
+  .switch .sw-txt b{font-size:11.5px}
+  .check span{font-size:10px}
+  .engine-note{font-size:12.5px}
+  .panel-head h2,.bd-title h2{font-size:19px}
+  .tname{font-size:17px}
+  .trule{font-size:9.5px}
+  .tspend{font-size:10.5px}
+  .projmeta{font-size:9.5px}
+  .num b{font-size:18px}
+  .num i{font-size:9.5px}
+  .badge{font-size:9.5px}
+  .bd-tier{font-size:18px}
+  .bd-lab b{font-size:11px}
+  .bd-lab span{font-size:10px}
+  .bd-val{font-size:13px}
+  .bd-total b{font-size:28px}
+  .pity-cell span,.pity-cell small{font-size:9.5px}
+  .pity-cell b{font-size:27px}
+  .pity-note{font-size:10.5px}
+  .term-body{font-size:12px}
+  .modal-body,.info-text,.info-analogy{font-size:13.5px}
+  .info-example{font-size:12.5px}
+  .info-lbl,.info-note{font-size:10px}
+  .formula,.line{font-size:12px}
+  .sheet-foot span{font-size:10px}
+  .bigval span{font-size:10.5px}
+  .leviHead{font-size:10px}
+  .leviHead b{font-size:12px}
+  .leviReadout{font-size:10px}
   @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -645,14 +700,14 @@
               <div class="control"><input type="number" id="fCerts" min="0" step="1" value="180"><span class="unit" data-i18n="unit.cert">CERT</span></div>
             </div>
             <div class="field">
-              <label for="fShop"><span data-i18n="step2.shop">SHOP TIER CLEARED</span><button class="info-trigger" type="button" data-info="certs" aria-label="Detail yellow certs"></button></label>
+              <label for="fShop"><span data-i18n="step2.shop">SHOP HEADHUNT TIER</span> <i data-i18n="step2.shopSub">(YELLOW CERTS)</i><button class="info-trigger" type="button" data-info="certs" aria-label="Detail yellow certs"></button></label>
               <select class="control" id="fShop">
                 <option value="0" data-i18n="step2.shopTier0">TIER 0</option><option value="1" data-i18n="step2.shopTier1">TIER 1</option><option value="2" selected data-i18n="step2.shopTier2">TIER 2</option>
                 <option value="3" data-i18n="step2.shopTier3">TIER 3</option><option value="4" data-i18n="step2.shopTier4">TIER 4</option><option value="5" data-i18n="step2.shopTier5">TIER 5</option>
               </select>
             </div>
           </div>
-          <div class="field" style="margin-top:2px">
+          <div class="field" id="pityField" style="margin-top:2px">
             <label for="fPity"><span data-i18n="step2.pity">CURRENT PITY</span> <i id="pityFlag">SHARED PITY</i><button class="info-trigger" type="button" data-info="pity" aria-label="Detail current pity"></button></label>
             <div class="control"><input type="number" id="fPity" min="0" max="98" step="1" value="0"><span class="unit" data-i18n="step1.unit.pull">PULL</span></div>
             <div class="hint" id="pityHint"></div>
@@ -665,12 +720,12 @@
         <div class="mini-head"><h3 data-i18n="step2.opConversion">OP conversion</h3><span id="routeState">100% OP</span></div>
         <div class="mini-body">
           <div class="field">
-            <label><span data-i18n="step2.opConversionLabel">OP CONVERSION</span> <i data-i18n="step2.opConversionHint">INVENTORY + BEST-VALUE BASKET</i><button class="info-trigger" type="button" data-info="op-pct" aria-label="Detail OP conversion"></button></label>
+            <label><span data-i18n="step2.opConversionLabel">OP CONVERSION</span><button class="info-trigger" type="button" data-info="op-pct" aria-label="Detail OP conversion"></button></label>
             <div class="range-row">
               <input type="range" id="fOPPct" min="0" max="100" step="5" value="100">
               <span class="range-val" id="fOPPctVal">100%</span>
             </div>
-            <div class="hint" data-i18n-html="step2.opHint">Doc values packs at <b>100%</b> OP → Orundum. Lower this only if you reserve OP for skins or Sanity.</div>
+            <div class="hint" data-i18n-html="step2.opHint"><b>100%</b> = all OP becomes pulls. Lower it if you save OP for skins or Sanity.</div>
           </div>
           <div class="hint" style="margin-top:10px" data-i18n-html="step2.matrixNote">Matrix rows are <b>best-value baskets at each tier cap</b>. The optimizer buys Monthly Card → Monthly HH Pack → OP20 → OP6 → OP1, all normal (non-FT). Recurring items reset every 30 days.</div>
         </div>
@@ -815,13 +870,15 @@
 
   var ARCH = {
     LIMITED:   { name:"LIMITED",   rateUp:0.70, isolated:true,  spark:300, guaranteeAt:null, freePulls:24,
+                 freePullsLabel:"1 free 10-pull + 14 daily free pulls",
                  desc:"Spark at 300 · isolated pity · 1 free 10-pull + 14 daily pulls" },
     EVENT:     { name:"EVENT",     rateUp:0.50, isolated:false, spark:null, guaranteeAt:150, freePulls:0,
                  desc:"150-pull rate-up guarantee · shared pity" },
     STANDARD:  { name:"STANDARD",  rateUp:0.50, isolated:false, spark:null, guaranteeAt:null, freePulls:0,
                  desc:"No hard pity · shared pity group" },
-    CROSSOVER: { name:"CROSSOVER", rateUp:1.00, isolated:true,  spark:120, guaranteeAt:null, freePulls:0,
-                 desc:"Spark at 120 · isolated pity · 100% rate-up slot" },
+    CROSSOVER: { name:"CROSSOVER", rateUp:1.00, isolated:true,  spark:120, guaranteeAt:null, freePulls:10,
+                 freePullsLabel:"1 free 10-pull ticket",
+                 desc:"Spark at 120 · isolated pity · 100% rate-up · 1 free 10-pull" },
     KERNEL:    { name:"KERNEL",    rateUp:0.50, isolated:false, spark:null, guaranteeAt:null, freePulls:0,
                  desc:"No hard pity · kernel pity group" }
   };
@@ -1317,8 +1374,8 @@
       if (bundle.cardQty > 0) lines.push({ key:"card", label:"MONTHLY CARD", meta: fmt(cal.days) + "d × 200 ORU + " + bundle.cardOP + " OP (" + bundle.cardPurchases + " renewal)", value:bundle.cardPulls });
       if (bundle.hhPulls > 0) lines.push({ key:"packs", label:"MONTHLY HH PACK", meta: bundle.months + " cycle(s) × 1/30d · 42 OP + 1 ten-roll", value:bundle.hhPulls });
       if (bundle.opPulls > 0) lines.push({ key:"op", label:"OP PACKS · " + state.opPct + "%", meta: "best-value fill · $" + bundle.opSpend.toFixed(2) + "/mo × " + bundle.months + " cycle(s)", value:bundle.opPulls });
-      lines.push({ key:"certs", label:"YELLOW CERTS", meta: fmt(state.certs) + " certs · " + (state.shop > 0 ? "Tier " + state.shop + " cleared" : "from Tier 1") + " (" + fmt(certResult.remaining) + " unspent)", value:certPulls });
-      if (archetypeBonus > 0) lines.push({ key:"arch", label:"ARCHETYPE BONUS", meta: "free 10-pull + 14 daily free pulls", value:archetypeBonus });
+      lines.push({ key:"certs", label:"YELLOW CERTS", meta: fmt(state.certs) + " certs · " + (state.shop > 0 ? "HH Tier " + state.shop + " cleared" : "from HH Tier 1") + " (" + fmt(certResult.remaining) + " unspent)", value:certPulls });
+      if (archetypeBonus > 0) lines.push({ key:"arch", label:"ARCHETYPE BONUS", meta: arch.freePullsLabel || "free pulls", value:archetypeBonus });
 
       var total = Math.floor(lines.reduce(function(a, l){ return a + l.value; }, 0));
       var sparkAtTier = sparkBonusAt(total, spark);
@@ -1464,8 +1521,7 @@
     $("#headStats").innerHTML =
       '<div class="hstat"><span>DAYS LEFT</span><b>' + fmt(cal.days) + '</b><small>' + fmt(cal.weeks) + ' weekly resets</small></div>' +
       '<div class="hstat"><span class="hstat-label">BENCHMARK<button class="info-trigger" type="button" data-info="benchmark" aria-label="Detail benchmark"></button></span><b>' + fmt(view.benchmark) + '</b><small>' + (state.mode === "pulls" ? "target pulls" : "pulls @ confidence") + '</small></div>' +
-      '<div class="hstat"><span>MIN VIABLE TIER</span><b class="acc">' + minLabel + '</b><small>' + minSub + '</small></div>' +
-      '<div class="hstat"><span>TIERS CLEARING</span><b class="ok">' + view.clearTiers.length + '/6</b><small>' + (state.mode === "pulls" ? "target reached" : "confidence met") + '</small></div>';
+      '<div class="hstat"><span>MIN VIABLE TIER</span><b class="acc">' + minLabel + '</b><small>' + minSub + '</small></div>';
 
     $("#targetState").textContent = arch.name;
     $("#routeState").textContent = state.opPct + "% OP";
@@ -1656,20 +1712,32 @@
     });
     el.addEventListener("blur", function(){
       el.value = state[key];
-      render();
+      renderNow();
     });
   }
 
-  var raf = null;
-  function schedule(){
-    if (raf) return;
-    raf = requestAnimationFrame(function(){ raf = null; render(); });
+  var RENDER_DEBOUNCE_MS = 300;
+  var renderTimer = null;
+
+  function renderNow(){
+    if (renderTimer){ clearTimeout(renderTimer); renderTimer = null; }
+    render();
   }
+
+  function schedule(){
+    if (renderTimer) clearTimeout(renderTimer);
+    renderTimer = setTimeout(function(){ renderTimer = null; render(); }, RENDER_DEBOUNCE_MS);
+  }
+
+  window.addEventListener("beforeunload", function(){
+    if (renderTimer){ clearTimeout(renderTimer); renderTimer = null; saveState(); }
+  });
 
   function syncPityField(){
     var arch = ARCH[state.arch];
     var input = $("#fPity");
     input.disabled = arch.isolated;
+    $("#pityField").style.display = arch.isolated ? "none" : "block";
     $("#pityFlag").textContent = arch.isolated ? "IGNORED · ISOLATED" : "SHARED PITY";
     $("#pityHint").innerHTML = arch.isolated
       ? "This archetype uses an <b>isolated pity group</b> — the inherited counter is not applied."
@@ -1717,7 +1785,7 @@
       state.arch = this.value;
       var arch = ARCH[state.arch];
       if (arch.spark) state.targetPulls = arch.spark;
-      syncArch(); render();
+      syncArch(); renderNow();
     });
     $("#fEnd").addEventListener("change", function(){
       var iso = dmyToISO(this.value);
@@ -1730,7 +1798,7 @@
       state.endDate = iso;
       this.value = isoToDMY(iso);
       $("#endHint").innerHTML = "";
-      render();
+      renderNow();
     });
     $("#fEnd").addEventListener("input", function(){
       if (dmyToISO(this.value)){
@@ -1740,25 +1808,25 @@
     });
 
     $$("#modeSeg button").forEach(function(b){
-      b.addEventListener("click", function(){ state.mode = b.getAttribute("data-mode"); syncMode(); render(); });
+      b.addEventListener("click", function(){ state.mode = b.getAttribute("data-mode"); syncMode(); renderNow(); });
     });
     num($("#fPulls"), "targetPulls", 1, 2000);
 
-    $("#fCurPot").addEventListener("change", function(){ state.curPot = +this.value; render(); });
-    $("#fPot").addEventListener("change", function(){ state.pot = +this.value; render(); });
-    $("#fAvail").addEventListener("change", function(){ state.avail = this.value; syncProb(); render(); });
+    $("#fCurPot").addEventListener("change", function(){ state.curPot = +this.value; renderNow(); });
+    $("#fPot").addEventListener("change", function(){ state.pot = +this.value; renderNow(); });
+    $("#fAvail").addEventListener("change", function(){ state.avail = this.value; syncProb(); renderNow(); });
     $("#fProb").addEventListener("input", function(){
       var v = parseFloat(this.value);
       if (isNaN(v)) return;
       state.prob = Math.max(0, Math.min(100, v)) / 100;
-      render();
+      schedule();
     });
-    $("#fProb").addEventListener("blur", function(){ this.value = Math.round(state.prob * 100); });
+    $("#fProb").addEventListener("blur", function(){ this.value = Math.round(state.prob * 100); renderNow(); });
     $$("#confChips button").forEach(function(b){
       b.addEventListener("click", function(){
         state.confidence = parseFloat(b.getAttribute("data-conf"));
         $$("#confChips button").forEach(function(x){ x.setAttribute("aria-pressed", String(x === b)); });
-        render();
+        renderNow();
       });
     });
 
@@ -1768,7 +1836,7 @@
     num($("#fHH10"), "hh10", 0);
     num($("#fCerts"), "certs", 0);
     num($("#fPity"), "pity", 0, 98);
-    $("#fShop").addEventListener("change", function(){ state.shop = +this.value; render(); });
+    $("#fShop").addEventListener("change", function(){ state.shop = +this.value; renderNow(); });
 
     $("#fOPPct").addEventListener("input", function(){
       state.opPct = +this.value;
@@ -1784,7 +1852,7 @@
         state.levi[id] = Math.max(0, Math.min(99, Math.round(v)));
         schedule();
       });
-      el.addEventListener("blur", function(){ el.value = state.levi[id]; render(); });
+      el.addEventListener("blur", function(){ el.value = state.levi[id]; renderNow(); });
     }
     numLevi($("#fLevi130"), "op130");
     numLevi($("#fLevi66"), "op66");
@@ -1795,14 +1863,14 @@
       var row = e.target.closest(".tier");
       if (!row) return;
       state.selected = row.getAttribute("data-tier");
-      render();
+      renderNow();
     });
 
     $("#outlookTiers").addEventListener("click", function(e){
       var pill = e.target.closest(".tier-pill");
       if (!pill) return;
       state.selected = pill.getAttribute("data-tier");
-      render();
+      renderNow();
     });
 
     $$("#steps .step").forEach(function(b){
@@ -1962,27 +2030,26 @@
       analogy: "Meteran parkir: makin lama tidak dapat 6★, makin besar peluang 6★ berikutnya.",
       body: "<p>Ini counter berapa pull berturut-turut yang <b>belum</b> menghasilkan 6★.</p>" +
             "<p>Setelah 49 miss, peluang 6★ perlahan naik. Counter reset ke 0 setiap kali 6★ keluar.</p>" +
-            "<p>Banner <b>LIMITED</b> dan <b>CROSSOVER</b> punya pity terisolasi, jadi counter ini diabaikan dan input dinonaktifkan.</p>",
+            "<p>Banner <b>LIMITED</b> dan <b>CROSSOVER</b> punya pity terisolasi, jadi field ini disembunyikan dan counter dianggap 0.</p>",
       example: "Pity 60 → peluang 6★ berikutnya jauh di atas dasar 2%.",
       impact: "P(TARGET), CHANCE ANY 6★, PULLS @ CONF.",
     },
     "certs": {
       kicker: "FIELD · YELLOW CERTS",
-      title: "YELLOW CERTS + SHOP TIER",
+      title: "YELLOW CERTS + SHOP HEADHUNT TIER",
       analogy: "Tukar poin: 10 cert = 1 pull, 18 = 2 pull, 40 = 5, 70 = 10, 120 = 20.",
       body: "<p>Yellow cert ditukar jadi pull lewat shop. Shop punya tangga harga: tier bawah murah, tier atas mahal.</p>" +
-            "<p><b>SHOP TIER CLEARED</b> = tier yang sudah kamu beli bulan ini, jadi dilewati.</p>" +
+            "<p><b>SHOP HEADHUNT TIER</b> = tier headhunt yang sudah kamu beli bulan ini, jadi dilewati.</p>" +
             "<p>Sisa cert bisa dipakai lagi di bulan berikutnya. Model ini <b>tidak</b> menambah income cert baru.</p>",
-      example: "180 cert, Tier 2 cleared → 21 pull, sisa 14 cert.",
+      example: "180 cert, HH Tier 2 cleared → 21 pull, sisa 14 cert.",
       impact: "Total pull, badge.",
     },
     "op-pct": {
       kicker: "FIELD · OP CONVERSION",
       title: "OP CONVERSION %",
       analogy: "Tukar mata uang: 100% = semua OP ditukar; 50% = setengah disimpan untuk skin/sanity.",
-      body: "<p>Ini mengatur seberapa agresif Originite Prime diubah jadi Orundum untuk pull.</p>" +
-            "<p>Yang ikut terkena: OP di inventory, OP dari Monthly Card, HH Pack, dan OP packs.</p>" +
-            "<p>0% = OP tidak dipakai untuk pull sama sekali.</p>",
+      body: "<p>Seberapa banyak Originite Prime yang ditukar jadi Orundum untuk pull.</p>" +
+            "<p><b>100%</b> = semua OP dipakai. Turunkan kalau sebagian OP mau disimpan untuk skin atau Sanity. <b>0%</b> = OP tidak dipakai untuk pull.</p>",
       example: "100% → 45 OP = 13,5 pull.\n50% → 6,75 pull.",
       impact: "pulls/mo, total pull, badge.",
     },
@@ -2014,7 +2081,8 @@
       body: "<p><b>CHANCE ANY 6★</b> = peluang pernah dapat 6★ dalam pull tier ini.</p>" +
             "<p><b>CHANCE TARGET COPY</b> = peluang dapat minimal 1 copy target.</p>" +
             "<p><b>P(REACH x%)</b> = apakah tier aktif mencapai confidence.</p>" +
-            "<p><b>PULLS @ CONF</b> = pull minimum global untuk confidence, di luar tier mana pun.</p>",
+            "<p><b>PULLS @ CONF</b> = pull minimum global untuk confidence, di luar tier mana pun.</p>" +
+            "<p><b>Cara hitung:</b> tiap pull punya peluang 6★ 2%, naik +2% setelah 49 miss. Setiap 6★ lalu punya peluang P(TARGET | 6★) menjadi target. Mesin menjumlahkan semua kemungkinan ini secara eksak (DP), menambah spark di 120/300 pull, lalu menghasilkan empat angka di atas.</p>",
       example: "F2P 190 pull: any 6★ 100%, target copy 87,2%, PULLS @ CONF 212.",
       impact: "Semua output probabilitas.",
     },
