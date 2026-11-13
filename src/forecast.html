@@ -293,6 +293,22 @@
   .bd-total b{font-family:var(--font-display);font-size:24px;font-weight:600;color:var(--c);line-height:1}
   .bd-total b small{font-family:var(--font-mono);font-size:8.5px;letter-spacing:.1em;color:var(--muted-2);margin-left:6px}
 
+  /* tier delta */
+  .bd-delta-box{display:flex;flex-wrap:wrap;align-items:center;gap:5px 12px;margin:0 0 11px;padding:8px 11px;
+    border:1px solid rgba(228,169,60,.45);box-shadow:inset 2px 0 0 var(--accent);background:rgba(228,169,60,.07);
+    font-family:var(--font-mono);font-size:9.5px;letter-spacing:.04em;color:var(--muted)}
+  .bd-delta-box .t{color:var(--accent);letter-spacing:.11em;font-weight:500}
+  .bd-delta-box b{color:var(--fg);font-weight:500}
+  .bd-delta-box.base{border-color:var(--border);box-shadow:inset 2px 0 0 var(--border);background:rgba(255,255,255,.015)}
+  .bd-delta-box.base .t{color:var(--muted-2)}
+  .bd-row.changed{background:linear-gradient(90deg,rgba(228,169,60,.09),transparent 62%)}
+  .bd-row.changed .bd-lab b{color:var(--accent)}
+  .bd-row.removed .bd-lab b{color:var(--muted-2);text-decoration:line-through}
+  .bd-row.removed .bd-val{color:var(--muted-2)}
+  .bd-delta-badge{display:inline-block;margin-left:6px;padding:1px 4px;border:1px solid rgba(228,169,60,.5);
+    background:rgba(228,169,60,.08);color:var(--accent);font-family:var(--font-mono);font-style:normal;
+    font-size:9px;letter-spacing:.04em;white-space:nowrap}
+
   /* pity */
   .pity-grid{display:grid;grid-template-columns:repeat(4,1fr)}
   .pity-cell{padding:13px 15px;border-right:1px solid var(--border)}
@@ -514,6 +530,8 @@
   .bd-val{font-size:13px}
   .bd-total b{font-size:28px}
   .pity-cell span,.pity-cell small{font-size:9.5px}
+  .bd-delta-box{font-size:10px}
+  .bd-delta-badge{font-size:9.5px}
   .pity-cell b{font-size:27px}
   .pity-note{font-size:10.5px}
   .term-body{font-size:12px}
@@ -547,6 +565,7 @@
   <nav class="nav" aria-label="Primary">
     <a href="forecast.html" aria-current="page" data-i18n="nav.forecast">FORECAST</a>
     <a href="roadmap.html" data-i18n="nav.roadmap">ROADMAP</a>
+    <a href="settings.html" data-i18n="nav.settings">SETTINGS</a>
   </nav>
   <div class="top-right">
     <div class="lang-switch" id="langSwitch" role="group" aria-label="Language">
@@ -584,7 +603,7 @@
         <div class="mini-head"><h3 data-i18n="step1.bannerGoal">Banner &amp; goal</h3></div>
         <div class="mini-body">
           <div class="field">
-            <label for="fArch" data-i18n="step1.arch">BANNER ARCHETYPE</label>
+            <label for="fArch"><span data-i18n="step1.arch">BANNER ARCHETYPE</span><button class="info-trigger" type="button" data-info="archetype" aria-label="Detail banner archetype"></button></label>
             <select class="control" id="fArch">
               <option value="LIMITED">LIMITED · <span data-i18n="arch.desc.LIMITED">anniversary / festival</span></option>
               <option value="EVENT">EVENT · <span data-i18n="arch.desc.EVENT">new solo 6★ debut</span></option>
@@ -592,7 +611,6 @@
               <option value="CROSSOVER">CROSSOVER · <span data-i18n="arch.desc.CROSSOVER">collab pool</span></option>
               <option value="KERNEL">KERNEL · <span data-i18n="arch.desc.KERNEL">classic pool</span></option>
             </select>
-            <div class="hint" id="archHint"></div>
           </div>
           <div class="field">
             <label for="fEnd" data-i18n="step1.endDate">TARGET END DATE</label>
@@ -611,7 +629,6 @@
             <div class="field">
               <label for="fPulls"><span data-i18n="step1.pulls">TARGET PULLS</span> <i id="pullsHintLabel">SPARK 300</i></label>
               <div class="control"><input type="number" id="fPulls" min="1" max="2000" step="1" value="300"><span class="unit" data-i18n="step1.unit.pull">PULL</span></div>
-              <div class="hint" id="pullsHint"></div>
             </div>
           </div>
 
@@ -628,7 +645,6 @@
                   <option value="5" data-i18n="step1.pot5">POTENTIAL 5</option>
                   <option value="6" data-i18n="step1.pot6">POTENTIAL 6</option>
                 </select>
-                <div class="hint" id="curPotHint"></div>
               </div>
               <div class="field">
                 <label for="fPot"><span data-i18n="step1.potential">TARGET POTENTIAL</span><button class="info-trigger" type="button" data-info="potential" aria-label="Detail target potential"></button></label>
@@ -640,7 +656,6 @@
                   <option value="5" data-i18n="step1.pot5">POTENTIAL 5</option>
                   <option value="6" data-i18n="step1.pot6">POTENTIAL 6</option>
                 </select>
-                <div class="hint" id="potHint"></div>
               </div>
             </div>
             <div class="field">
@@ -654,7 +669,6 @@
             <div class="field">
               <label for="fProb"><span data-i18n="step1.prob">P(TARGET | 6★)</span><button class="info-trigger" type="button" data-info="target-prob" aria-label="Detail P(TARGET | 6★)"></button></label>
               <div class="control"><input type="number" id="fProb" min="0" max="100" step="1" value="35"><span class="unit" data-i18n="unit.percent">%</span></div>
-              <div class="hint" id="probHint"></div>
             </div>
             <div class="field">
               <label><span data-i18n="step1.confidence">CONFIDENCE TARGET</span><button class="info-trigger" type="button" data-info="confidence" aria-label="Detail confidence target"></button></label>
@@ -679,7 +693,7 @@
       </div>
       <div class="pane-body">
       <section class="mini-card">
-        <div class="mini-head"><h3 data-i18n="step2.inventory">Inventory snapshot</h3><span data-i18n="step2.asOfToday">AS OF TODAY</span></div>
+        <div class="mini-head"><h3 data-i18n="step2.inventory">Inventory snapshot</h3><span style="display:flex;align-items:center;gap:6px"><span data-i18n="step2.asOfToday">AS OF TODAY</span><button class="info-trigger" type="button" data-info="income" aria-label="Detail income assumptions"></button></span></div>
         <div class="mini-body">
           <div class="grid2">
             <div class="field">
@@ -713,7 +727,6 @@
           <div class="field" id="pityField" style="margin-top:2px">
             <label for="fPity"><span data-i18n="step2.pity">CURRENT PITY</span> <i id="pityFlag">SHARED PITY</i><button class="info-trigger" type="button" data-info="pity" aria-label="Detail current pity"></button></label>
             <div class="control"><input type="number" id="fPity" min="0" max="98" step="1" value="0"><span class="unit" data-i18n="step1.unit.pull">PULL</span></div>
-            <div class="hint" id="pityHint"></div>
           </div>
         </div>
       </section>
@@ -732,10 +745,6 @@
         </div>
       </section>
 
-      <div class="engine-note">
-        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="currentColor"/><path d="M6 5v4M6 3v.6" stroke="currentColor" stroke-linecap="round"/></svg>
-        <span data-i18n="step2.engineNote">Annihilation (1 800 ORU/wk) & monthly calendar resets are automatically assumed claimed. Income is deterministic only.</span>
-      </div>
       </div>
     </section>
 
@@ -779,8 +788,7 @@
         </div>
         <div class="bd-body" id="bdBody"></div>
         <div class="leviPanel" id="leviPanel" style="display:none">
-          <div class="leviHead"><b data-i18n="step4.leviathan">LEVIATHAN · CUSTOM OP PACKS</b><span id="leviState">+$99.99/mo</span></div>
-          <div class="hint" data-i18n-html="step4.leviathanHint">Optional add-on on top of the <b>$500/mo best-value basket</b>. Normal packs only — no first-time bonus. OP20 is the best filler at <b>0.400 pulls/$</b>; OP130 is <b>0.390</b>.</div>
+          <div class="leviHead"><b data-i18n="step4.leviathan">LEVIATHAN · CUSTOM OP PACKS</b><span style="display:flex;align-items:center;gap:6px"><span id="leviState">+$99.99/mo</span><button class="info-trigger" type="button" data-info="leviathan" aria-label="Detail Leviathan packs"></button></span></div>
           <div class="grid2" style="margin-top:10px">
             <div class="field">
               <label for="fLevi130">OP 130</label>
@@ -858,6 +866,8 @@
 
 <div class="toast" id="toast"></div>
 
+<script src="product-catalog.js"></script>
+<script src="settings-store.js"></script>
 <script src="forecast-i18n.js"></script>
 <script>
 (function(){
@@ -884,31 +894,14 @@
                  desc:"No hard pity · kernel pity group" }
   };
 
-  // Product Catalog (USD-based spending classification)
-  var PRODUCT_CATALOG = [
-    // Originite Prime top-up
-    { id:"op1", name:"Originite Prime 1", price:0.99, op:1, pulls:0.30, firstTimeOp:3, firstTimePulls:0.90 },
-    { id:"op6", name:"Originite Prime 6", price:4.99, op:6, pulls:1.80, firstTimeOp:12, firstTimePulls:3.60 },
-    { id:"op20", name:"Originite Prime 20", price:14.99, op:20, pulls:6.0, firstTimeOp:40, firstTimePulls:12.0 },
-    { id:"op40", name:"Originite Prime 40", price:29.99, op:40, pulls:12.0, firstTimeOp:80, firstTimePulls:24.0 },
-    { id:"op66", name:"Originite Prime 66", price:49.99, op:66, pulls:19.8, firstTimeOp:132, firstTimePulls:39.6 },
-    { id:"op130", name:"Originite Prime 130", price:99.99, op:130, pulls:39.0, firstTimeOp:260, firstTimePulls:78.0 },
+  // Product catalog is shared with the Settings page.
+  var PRODUCT_CATALOG = window.PRTS_CATALOG || [];
 
-    // Monthly Card
-    { id:"monthly_card", name:"Monthly Card", price:4.99, op:6, orundum:200*30, pulls:11.8 },
-
-    // Monthly Headhunting Pack
-    { id:"hh_pack", name:"Monthly Headhunting Pack", price:25.99, op:42, tenPermits:1, pulls:22.6 },
-
-    // Starter packs
-    { id:"starter_hh", name:"Starter Headhunting Pack", price:19.99, tenPermits:2, pulls:20 },
-    { id:"starter_special", name:"Starter Special Headhunting Pack", price:29.99, tenPermits:1, pulls:10 },
-  ];
-
-  // Optimizer assumptions (pessimistic):
-  // - no first-time OP bonus, no starter packs, no event packs
-  // - Monthly Card and Monthly HH Pack reset every 30 days
+  // Optimizer assumptions:
+  // - no first-time OP bonus, no event packs
+  // - Monthly Card and Monthly HH Pack reset every 30 days (max 1 each)
   // - normal OP packs are unlimited
+  // - starter packs are one-time and opt-in via Settings
   var CYCLE_DAYS = 30;
 
   var TIERS = [
@@ -1179,57 +1172,98 @@
     return oru / PULL_COST + (prod.hhPermits || 0) + (prod.tenPermits || 0) * 10;
   }
 
-  // Best-value monthly basket for a budget. Only normal (non-FT) items.
-  // Greedy is exact here: OP20 (0.400/$) > OP6 (0.361/$) > OP1 (0.303/$),
-  // so fill with OP20 first, then use OP6/OP1 for the remainder.
+  function isProductEnabled(id){
+    var S = window.PRTS_SETTINGS;
+    if (S && typeof S.isEnabled === "function") return S.isEnabled(id);
+    var p = catalogById(id);
+    return !!(p && p.defaultEnabled);
+  }
+
+  // Best-value basket for one 30-day cycle under a monthly cap.
+  // Eligibility comes from Settings. Card/HH are optional toggles, starter
+  // packs are optional one-time items, and eligible OP packs fill the rest.
   // Cents arithmetic avoids floating-point floor errors.
-  function optimizeBasket(budgetUsd, opPct){
+  function optimizeBasket(budgetUsd, opPct, months){
+    months = Math.max(1, months || 1);
     var budgetCents = Math.max(0, Math.round(budgetUsd * 100));
-    var card = catalogById("monthly_card");
-    var hh = catalogById("hh_pack");
-    var op20 = catalogById("op20");
-    var op6 = catalogById("op6");
-    var op1 = catalogById("op1");
+    var card = isProductEnabled("monthly_card") ? catalogById("monthly_card") : null;
+    var hh = isProductEnabled("hh_pack") ? catalogById("hh_pack") : null;
+    var enabled = PRODUCT_CATALOG.filter(function(p){ return isProductEnabled(p.id); });
+    var oneTime = enabled.filter(function(p){ return p.recurring === false; });
+    var opPacks = enabled.filter(function(p){ return p.category === "op"; }).sort(function(a, b){
+      return (productPulls(b, opPct) / b.price) - (productPulls(a, opPct) / a.price);
+    });
     var best = null;
 
-    function consider(useCard, useHH){
-      var spendCents = (useCard ? Math.round(card.price * 100) : 0) + (useHH ? Math.round(hh.price * 100) : 0);
-      if (spendCents > budgetCents) return;
-
+    function consider(useCard, useHH, starters){
       var items = [];
-      var pulls = 0;
-      if (useCard){ items.push({ prod:card, qty:1 }); pulls += productPulls(card, opPct); }
-      if (useHH){ items.push({ prod:hh, qty:1 }); pulls += productPulls(hh, opPct); }
+      var recurringPulls = 0;
+      var oneTimePulls = 0;
+      var recurringSpendCents = 0;
+      var oneTimeSpendCents = 0;
 
-      var rem = budgetCents - spendCents;
+      starters.forEach(function(p){
+        items.push({ prod:p, qty:1 });
+        oneTimePulls += productPulls(p, opPct);
+        oneTimeSpendCents += Math.round(p.price * 100);
+      });
+      if (useCard && card){
+        items.push({ prod:card, qty:1 });
+        recurringPulls += productPulls(card, opPct);
+        recurringSpendCents += Math.round(card.price * 100);
+      }
+      if (useHH && hh){
+        items.push({ prod:hh, qty:1 });
+        recurringPulls += productPulls(hh, opPct);
+        recurringSpendCents += Math.round(hh.price * 100);
+      }
 
-      var q20 = Math.floor(rem / Math.round(op20.price * 100));
-      if (q20 > 0){ items.push({ prod:op20, qty:q20 }); pulls += q20 * productPulls(op20, opPct); rem -= q20 * Math.round(op20.price * 100); }
+      var monthlySpendCents = recurringSpendCents + oneTimeSpendCents;
+      if (monthlySpendCents > budgetCents) return;
 
-      var q6 = Math.floor(rem / Math.round(op6.price * 100));
-      if (q6 > 0){ items.push({ prod:op6, qty:q6 }); pulls += q6 * productPulls(op6, opPct); rem -= q6 * Math.round(op6.price * 100); }
+      var rem = budgetCents - monthlySpendCents;
+      opPacks.forEach(function(p){
+        var priceCents = Math.round(p.price * 100);
+        var q = Math.floor(rem / priceCents);
+        if (q > 0){
+          items.push({ prod:p, qty:q });
+          recurringPulls += q * productPulls(p, opPct);
+          recurringSpendCents += q * priceCents;
+          rem -= q * priceCents;
+        }
+      });
 
-      var q1 = Math.floor(rem / Math.round(op1.price * 100));
-      if (q1 > 0){ items.push({ prod:op1, qty:q1 }); pulls += q1 * productPulls(op1, opPct); rem -= q1 * Math.round(op1.price * 100); }
-
+      var windowPulls = recurringPulls * months + oneTimePulls;
+      var windowSpendCents = recurringSpendCents * months + oneTimeSpendCents;
       var cand = {
         items: items,
-        pulls: pulls,
+        pulls: recurringPulls + oneTimePulls,
+        windowPulls: windowPulls,
         spendCents: budgetCents - rem,
         spend: (budgetCents - rem) / 100,
-        remaining: rem / 100
+        remaining: rem / 100,
+        windowSpendCents: windowSpendCents
       };
       if (!best ||
-          cand.pulls > best.pulls + 1e-9 ||
-          (Math.abs(cand.pulls - best.pulls) <= 1e-9 && cand.spend < best.spend)){
+          cand.windowPulls > best.windowPulls + 1e-9 ||
+          (Math.abs(cand.windowPulls - best.windowPulls) <= 1e-9 && cand.windowSpendCents < best.windowSpendCents)){
         best = cand;
       }
     }
 
-    consider(false, false);
-    consider(true, false);
-    consider(false, true);
-    consider(true, true);
+    var cardOpts = card ? [false, true] : [false];
+    var hhOpts = hh ? [false, true] : [false];
+    var n = oneTime.length;
+    var combos = Math.pow(2, n);
+    for (var mask = 0; mask < combos; mask++){
+      var starters = [];
+      for (var i = 0; i < n; i++){
+        if (mask & (1 << i)) starters.push(oneTime[i]);
+      }
+      cardOpts.forEach(function(c){
+        hhOpts.forEach(function(h){ consider(c, h, starters); });
+      });
+    }
 
     return best || { items:[], pulls:0, spendCents:0, spend:0, remaining:budgetUsd };
   }
@@ -1261,19 +1295,26 @@
   }
 
   // The monthly basket for a matrix row. Leviathan adds the custom panel.
-  function basketForTier(tier, opPct){
-    var base = optimizeBasket(tier.cap, opPct);
+  function basketForTier(tier, opPct, months){
+    var base = optimizeBasket(tier.cap, opPct, months);
     return tier.key === "LEVIATHAN" ? addPackOverrides(base, state.levi, opPct) : base;
   }
 
   // Expand the monthly basket across the forecast window.
-  // The 30-day cycle is used for the Monthly Card and Monthly HH Pack.
+  // Recurring items repeat every 30-day cycle; one-time starters count once.
   function computeBasketWindow(basket, days, opPct){
     var months = Math.max(1, Math.ceil(days / CYCLE_DAYS));
     var factor = opPct / 100;
     var cardQty = 0, hhQty = 0, opQty = 0, opSpend = 0;
+    var oneTimePulls = 0, oneTimeSpend = 0, oneTimeNames = [];
 
     basket.items.forEach(function(x){
+      if (x.prod.recurring === false){
+        oneTimePulls += x.qty * productPulls(x.prod, opPct);
+        oneTimeSpend += x.qty * x.prod.price;
+        oneTimeNames.push(x.prod.name + (x.qty > 1 ? " ×" + x.qty : ""));
+        return;
+      }
       if (x.prod.id === "monthly_card") cardQty += x.qty;
       else if (x.prod.id === "hh_pack") hhQty += x.qty;
       else { opQty += x.qty; opSpend += x.prod.price * x.qty; }
@@ -1287,17 +1328,23 @@
 
     // Monthly HH Pack: 42 OP + 1 ten-roll, once per 30-day cycle.
     var hhPulls = 0;
-    if (hhQty > 0){
-      var hhProd = catalogById("hh_pack");
+    var hhProd = catalogById("hh_pack");
+    if (hhQty > 0 && hhProd){
       hhPulls = hhQty * months * productPulls(hhProd, opPct);
     }
 
     // OP packs: unlimited, counted per cycle.
     var opPulls = 0;
     basket.items.forEach(function(x){
+      if (x.prod.recurring === false) return;
       if (x.prod.id === "monthly_card" || x.prod.id === "hh_pack") return;
       opPulls += x.qty * months * productPulls(x.prod, opPct);
     });
+
+    var cardProd = catalogById("monthly_card");
+    var cardSpend = cardProd ? cardQty * cardProd.price : 0;
+    var hhSpend = hhProd ? hhQty * hhProd.price : 0;
+    var recurringSpend = cardSpend + hhSpend + opSpend;
 
     return {
       months: months,
@@ -1310,9 +1357,13 @@
       opQty: opQty,
       opSpend: opSpend,
       opPulls: opPulls,
-      totalPulls: cardPulls + hhPulls + opPulls,
-      perMonthUsd: basket.spend,
-      windowUsd: basket.spend * months
+      oneTimePulls: oneTimePulls,
+      oneTimeSpend: oneTimeSpend,
+      oneTimeNames: oneTimeNames,
+      recurringSpend: recurringSpend,
+      totalPulls: cardPulls + hhPulls + opPulls + oneTimePulls,
+      perMonthUsd: recurringSpend,
+      windowUsd: recurringSpend * months + oneTimeSpend
     };
   }
 
@@ -1352,8 +1403,9 @@
 
     // Each matrix row is the best-value basket at that tier's monthly cap.
     // Rows are monthly profiles; the banner window only scales the projection.
+    var basketMonths = Math.max(1, Math.ceil(cal.days / CYCLE_DAYS));
     var tiers = TIERS.map(function(t, i){
-      var basket = basketForTier(t, state.opPct);
+      var basket = basketForTier(t, state.opPct, basketMonths);
       var bundle = computeBasketWindow(basket, cal.days, state.opPct);
 
       var invOPPulls = state.op > 0
@@ -1375,6 +1427,7 @@
       if (bundle.cardQty > 0) lines.push({ key:"card", label:"MONTHLY CARD", meta: fmt(cal.days) + "d × 200 ORU + " + bundle.cardOP + " OP (" + bundle.cardPurchases + " renewal)", value:bundle.cardPulls });
       if (bundle.hhPulls > 0) lines.push({ key:"packs", label:"MONTHLY HH PACK", meta: bundle.months + " cycle(s) × 1/30d · 42 OP + 1 ten-roll", value:bundle.hhPulls });
       if (bundle.opPulls > 0) lines.push({ key:"op", label:"OP PACKS · " + state.opPct + "%", meta: "best-value fill · $" + bundle.opSpend.toFixed(2) + "/mo × " + bundle.months + " cycle(s)", value:bundle.opPulls });
+      if (bundle.oneTimePulls > 0) lines.push({ key:"onetime", label:"STARTER PACKS · ONE-TIME", meta: bundle.oneTimeNames.join(" · ") + " · $" + bundle.oneTimeSpend.toFixed(2) + " once", value:bundle.oneTimePulls });
       lines.push({ key:"certs", label:"YELLOW CERTS", meta: fmt(state.certs) + " certs · " + (state.shop > 0 ? "HH Tier " + state.shop + " cleared" : "from HH Tier 1") + " (" + fmt(certResult.remaining) + " unspent)", value:certPulls });
       if (archetypeBonus > 0) lines.push({ key:"arch", label:"ARCHETYPE BONUS", meta: arch.freePullsLabel || "free pulls", value:archetypeBonus });
 
@@ -1399,7 +1452,7 @@
         purchases:purchases,
         basket:basket,
         bundle:bundle,
-        monthlySpend:basket.spend,
+        monthlySpend:bundle.recurringSpend,
         monthlyPulls:monthlyPulls,
         sparkAtTier:sparkAtTier
       };
@@ -1439,7 +1492,7 @@
       t.delta = t.total - benchmark;
       if (state.mode === "pulls"){
         t.clear = t.total >= state.targetPulls;
-        if (arch.spark && t.total >= arch.spark && state.avail !== "ABSENT"){
+        if (arch.spark && t.clear && t.total >= arch.spark && state.avail !== "ABSENT"){
           t.status = "GUARANTEED";
         } else {
           t.status = t.clear ? "FEASIBLE" : "DEFICIT";
@@ -1475,7 +1528,9 @@
 
   var TIER_SHORT = {
     monthly_card:"CARD", hh_pack:"HH PACK", op130:"OP130", op66:"OP66",
-    op40:"OP40", op20:"OP20", op6:"OP6", op1:"OP1"
+    op40:"OP40", op20:"OP20", op6:"OP6", op1:"OP1",
+    starter_pack:"STARTER", starter_monthly:"STARTER MO",
+    starter_sync:"STARTER SYNC", starter_hh:"STARTER HH"
   };
 
   function tierRow(t){
@@ -1562,10 +1617,56 @@
     $("#outlookState").textContent = t.tier.key;
     $("#leviPanel").style.display = state.selected === "LEVIATHAN" ? "block" : "none";
 
-    var rows = t.lines.map(function(l){
+    var idx = -1;
+    for (var i = 0; i < view.tiers.length; i++){
+      if (view.tiers[i].tier.key === t.tier.key){ idx = i; break; }
+    }
+    var prev = idx > 0 ? view.tiers[idx - 1] : null;
+    var prevByKey = {};
+    if (prev){
+      prev.lines.forEach(function(l){ prevByKey[l.key] = l; });
+    }
+
+    function signed(n){
+      if (Math.abs(n) < 0.05) return "0";
+      return (n > 0 ? "+" : "−") + fmt1(Math.abs(n));
+    }
+    function signedUsd(n){
+      if (Math.abs(n) < 0.005) return "$0.00";
+      return (n > 0 ? "+" : "−") + "$" + Math.abs(n).toFixed(2);
+    }
+
+    var deltaBox;
+    if (prev){
+      deltaBox = '<div class="bd-delta-box">' +
+        '<span class="t">Δ VS ' + prev.tier.key + '</span>' +
+        '<span><b>' + signed(total - prev.total) + '</b> total pulls</span>' +
+        '<span><b>' + signed(t.monthlyPulls - prev.monthlyPulls) + '</b> pulls/mo</span>' +
+        '<span><b>' + signedUsd(t.monthlySpend - prev.monthlySpend) + '</b>/mo</span>' +
+      '</div>';
+    } else {
+      deltaBox = '<div class="bd-delta-box base"><span class="t">BASE TIER</span><span>No previous tier to compare.</span></div>';
+    }
+
+    var merged = t.lines.map(function(l){
+      return { key:l.key, label:l.label, meta:l.meta, value:l.value };
+    });
+    if (prev){
+      prev.lines.forEach(function(l){
+        var exists = merged.some(function(x){ return x.key === l.key; });
+        if (!exists) merged.push({ key:l.key, label:l.label, meta:l.meta, value:0, removed:true });
+      });
+    }
+
+    var rows = merged.map(function(l){
       var w = total > 0 ? Math.min(100, (l.value / total) * 100) : 0;
-      return '<div class="bd-row">' +
-        '<span class="bd-lab"><b>' + l.label + '</b><span>' + l.meta + '</span></span>' +
+      var prevVal = prev && prevByKey[l.key] ? prevByKey[l.key].value : 0;
+      var delta = l.value - prevVal;
+      var changed = !!prev && Math.abs(delta) >= 0.05;
+      var badge = changed ? ' <i class="bd-delta-badge">' + signed(delta) + '</i>' : "";
+      var meta = l.meta + (l.removed ? ' · removed vs previous tier' : '');
+      return '<div class="bd-row' + (changed ? ' changed' : '') + (l.removed ? ' removed' : '') + '">' +
+        '<span class="bd-lab"><b>' + l.label + badge + '</b><span>' + meta + '</span></span>' +
         '<span class="bd-bar"><i style="--w:' + w + '%;--c:' + t.tier.color + '"></i></span>' +
         '<span class="bd-val">' + fmt1(l.value) + '</span>' +
       '</div>';
@@ -1575,7 +1676,7 @@
       ? t.purchases.map(function(p){ return p.name; }).join(" · ")
       : "no purchases · F2P";
 
-    $("#bdBody").innerHTML = rows +
+    $("#bdBody").innerHTML = deltaBox + rows +
       '<div class="bd-total"><span>TOTAL PROJECTED · ' + esc(purchase.toUpperCase()) + '</span><b>' + fmt(total) + '<small>pulls</small></b></div>';
   }
 
@@ -1639,29 +1740,12 @@
   function render(){
     view = computeState();
     renderHead();
-    renderPotHints();
     renderMatrix();
     renderBreakdown();
     renderPity();
     renderLeviPanel();
     renderStep();
     saveState();
-  }
-
-  /* Current vs target potential readout (Step 01) */
-  function renderPotHints(){
-    var cur = $("#curPotHint"), tgt = $("#potHint");
-    if (!cur || !tgt) return;
-    var need = Math.max(0, state.pot - state.curPot);
-    cur.innerHTML = state.curPot === 0
-      ? "<b>0</b> = " + t("step1.curPotHint.none", "target not owned yet.")
-      : t("step1.curPotHint.owned", "Owned at POT {pot}.").replace("{pot}", "<b>" + state.curPot + "</b>");
-    tgt.innerHTML = need === 0
-      ? t("step1.potHint.done", "Already at target — 0 copies needed, all tiers GUARANTEED.")
-      : t("step1.potHint.need", "{n} cop{y} needed from POT {cur}.")
-          .replace("{n}", "<b>" + need + "</b>")
-          .replace("{y}", need > 1 ? "ies" : "y")
-          .replace("{cur}", state.curPot);
   }
 
   /* Leviathan custom OP-pack panel readout */
@@ -1682,7 +1766,7 @@
     });
 
     var levi = TIERS.find(function(t){ return t.key === "LEVIATHAN"; });
-    var basket = basketForTier(levi, state.opPct);
+    var basket = basketForTier(levi, state.opPct, months);
     var bundle = computeBasketWindow(basket, view.cal.days, state.opPct);
 
     $("#leviState").textContent = extraSpend > 0 ? "+$" + extraSpend.toFixed(2) + "/mo" : "NO ADD-ON";
@@ -1695,8 +1779,8 @@
     container.innerHTML =
       '<b>MONTHLY</b> · +$' + extraSpend.toFixed(2) + '/mo · +' +
         fmt1(extraPulls) + ' pulls/mo from ' + qty + ' custom pack(s)' +
-      '<br><b>LEVIATHAN ROW</b> · $' + basket.spend.toFixed(2) + '/mo · ' +
-        fmt1(bundle.totalPulls / bundle.months) + ' pulls/mo' +
+      '<br><b>LEVIATHAN ROW</b> · $' + bundle.recurringSpend.toFixed(2) + '/mo · ' +
+        fmt1((bundle.totalPulls - bundle.oneTimePulls) / bundle.months) + ' pulls/mo' +
       '<br><b>' + months + ' CYCLE(S)</b> · ' + fmt1(bundle.totalPulls) + ' pulls projected' +
       warn;
   }
@@ -1734,15 +1818,19 @@
     if (renderTimer){ clearTimeout(renderTimer); renderTimer = null; saveState(); }
   });
 
+  if (window.PRTS_SETTINGS && typeof window.PRTS_SETTINGS.subscribe === "function"){
+    window.PRTS_SETTINGS.subscribe(function(){ renderNow(); });
+  }
+  window.addEventListener("pageshow", function(e){
+    if (e.persisted) renderNow();
+  });
+
   function syncPityField(){
     var arch = ARCH[state.arch];
     var input = $("#fPity");
     input.disabled = arch.isolated;
     $("#pityField").style.display = arch.isolated ? "none" : "block";
     $("#pityFlag").textContent = arch.isolated ? "IGNORED · ISOLATED" : "SHARED PITY";
-    $("#pityHint").innerHTML = arch.isolated
-      ? "This archetype uses an <b>isolated pity group</b> — the inherited counter is not applied."
-      : "Inherited from the shared pity group; carried into the DP curve as the starting counter.";
   }
 
   function syncMode(){
@@ -1754,15 +1842,11 @@
     var arch = ARCH[state.arch];
     if (state.mode === "pulls"){
       $("#pullsHintLabel").textContent = arch.spark ? t("sync.sparkLabel.spark","SPARK {n}").replace("{n}", arch.spark) : t("sync.sparkLabel.manual","MANUAL");
-      $("#pullsHint").innerHTML = arch.spark
-        ? t("sync.sparkThreshold","Spark threshold for {arch} is <b>{n} pulls</b>.").replace("{arch}", arch.name).replace("{n}", arch.spark)
-        : t("sync.noSpark","No spark on {arch} — the target is purely a pull count.").replace("{arch}", arch.name);
     }
   }
 
   function syncArch(){
     var arch = ARCH[state.arch];
-    $("#archHint").innerHTML = '<b>' + arch.name + '</b> · ' + arch.desc + '.';
     $("#targetState").textContent = arch.name;
     syncPityField();
     syncMode();
@@ -1774,10 +1858,8 @@
     input.disabled = absent;
     if (absent){
       input.value = 0;
-      $("#probHint").innerHTML = t("step1.probHintAbsent","Target <b>ABSENT</b> — chance is forced to 0 and Spark redemption is disabled.");
-    } else {
-      if (parseFloat(input.value) !== Math.round(state.prob*100)) input.value = Math.round(state.prob*100);
-      $("#probHint").innerHTML = t("step1.probHint","Single-operator chance after a 6★. Split rate-ups divide the pool (50% / 2 = <b>25%</b>).");
+    } else if (parseFloat(input.value) !== Math.round(state.prob*100)){
+      input.value = Math.round(state.prob*100);
     }
   }
 
@@ -1963,6 +2045,27 @@
 
   /* explanation tooltips */
   var INFO = {
+    "archetype": {
+      kicker: "FIELD · BANNER ARCHETYPE",
+      title: "BANNER ARCHETYPE",
+      analogy: "Tipe banner = buku aturan: tiap tipe punya spark, grup pity, dan free pull sendiri.",
+      body: "<p><b>LIMITED</b> — rate-up 70%, spark 300 pull, pity terisolasi, 1 free 10-pull + 14 daily free pull.</p>" +
+            "<p><b>EVENT</b> — rate-up 50%, jaminan rate-up setelah 150 pull, pity shared.</p>" +
+            "<p><b>STANDARD</b> — rate-up 50%, tanpa hard pity, pity shared.</p>" +
+            "<p><b>CROSSOVER</b> — rate-up 100%, spark 120 pull, pity terisolasi, 1 free 10-pull.</p>" +
+            "<p><b>KERNEL</b> — rate-up 50%, tanpa hard pity, pity shared kernel.</p>" +
+            "<p><b>Isolated</b> berarti counter pity warisan diabaikan dan mulai dari 0.</p>",
+      example: "LIMITED → spark 300.\nCROSSOVER → spark 120.",
+      impact: "Pity, spark, free pull, rate-up, dan status tier.",
+    },
+    "income": {
+      kicker: "SECTION · INCOME ASSUMPTIONS",
+      title: "INCOME ASSUMPTIONS",
+      analogy: "Semua pemasukan dianggap rutin dan pasti — tidak ada event atau drop acak.",
+      body: "<p>Annihilation (1 800 ORU/minggu) dan reset kalender bulanan diasumsikan otomatis diklaim.</p><p>Income bersifat deterministik saja: tidak ada reward event, tidak ada drop acak.</p>",
+      example: "90 hari → 13 reset mingguan × 1 800 ORU.",
+      impact: "Total pull natural per tier.",
+    },
     "target-prob": {
       kicker: "FIELD · TARGET PROBABILITY",
       title: "P(TARGET | 6★)",
@@ -2053,6 +2156,15 @@
             "<p><b>100%</b> = semua OP dipakai. Turunkan kalau sebagian OP mau disimpan untuk skin atau Sanity. <b>0%</b> = OP tidak dipakai untuk pull.</p>",
       example: "100% → 45 OP = 13,5 pull.\n50% → 6,75 pull.",
       impact: "pulls/mo, total pull, badge.",
+    },
+    "leviathan": {
+      kicker: "SECTION · LEVIATHAN PACKS",
+      title: "CUSTOM OP PACKS",
+      analogy: "Tambahan opsional di atas paket $500/bulan.",
+      body: "<p>Add-on opsional di atas <b>keranjang $500/bulan termurah</b>. Hanya pack normal — tanpa bonus first-time.</p>" +
+            "<p>OP20 adalah filler terbaik di <b>0.400 pull/$</b>; OP130 di <b>0.390</b>. Pack normal tidak dibatasi dan langsung ditumpuk.</p>",
+      example: "OP130 ×1 → +39 pull/bulan.",
+      impact: "Basket Leviathan, total pull, harga tier.",
     },
     "badge": {
       kicker: "SECTION · TIER STATUS",

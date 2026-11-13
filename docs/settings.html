@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PRTS · Settings</title>
+<meta name="description" content="Choose which pull-relevant shop packs are allowed to compete in the PRTS Forecast tier basket optimizer.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Rajdhani:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Rajdhani:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#090A0B; --card:#0E1012; --card-2:#111417; --inset:#0A0C0E;
+    --border:#23272B; --border-soft:#191D20;
+    --fg:#EDEEEC; --muted:#878D93; --muted-2:#7D858C;
+    --accent:#E4A93C; --success:#4CB782; --danger:#E5533D; --amber:#C79A4E;
+    --radius:4px;
+    --font-body:"Inter",system-ui,-apple-system,sans-serif;
+    --font-display:"Rajdhani","Inter",sans-serif;
+    --font-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    min-height:100vh; background:var(--bg); color:var(--fg);
+    font-family:var(--font-body); font-size:14px; line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  body::before{
+    content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
+    background-image:
+      linear-gradient(to right,rgba(255,255,255,.013) 1px,transparent 1px),
+      linear-gradient(to bottom,rgba(255,255,255,.013) 1px,transparent 1px);
+    background-size:64px 64px;
+  }
+  button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+  a{text-decoration:none;color:inherit}
+  ::selection{background:rgba(228,169,60,.28)}
+
+  .topbar{
+    position:sticky; top:0; z-index:10; display:flex; align-items:center; gap:14px;
+    padding:0 22px; height:52px; border-bottom:1px solid var(--border);
+    background:rgba(9,10,11,.95); backdrop-filter:blur(6px);
+  }
+  .brand{display:flex;align-items:center;gap:10px}
+  .mark{width:26px;height:26px;border:1px solid var(--border);display:grid;place-items:center;background:linear-gradient(160deg,#15181B,#0B0D0F)}
+  .wordmark{display:flex;flex-direction:column;line-height:1}
+  .wordmark b{font-family:var(--font-display);font-size:17px;letter-spacing:.16em;font-weight:600}
+  .wordmark span{font-family:var(--font-mono);font-size:8.5px;letter-spacing:.14em;color:var(--muted-2);margin-top:4px}
+  .nav{display:flex;align-items:center;gap:2px;margin-left:14px}
+  .nav a{font-family:var(--font-display);font-size:12.5px;letter-spacing:.12em;color:var(--muted);padding:7px 12px;border:1px solid transparent;border-radius:var(--radius)}
+  .nav a:hover{color:var(--fg);background:#101315}
+  .nav a[aria-current]{color:var(--accent);border-color:var(--border);background:#101315}
+  .top-right{margin-left:auto;display:flex;align-items:center;gap:12px}
+  .lang-switch{display:flex;border:1px solid var(--border);border-radius:2px;overflow:hidden;flex:none}
+  .lang-switch button{padding:5px 9px;font-family:var(--font-mono);font-size:9px;letter-spacing:.08em;color:var(--muted-2)}
+  .lang-switch button + button{border-left:1px solid var(--border)}
+  .lang-switch button[aria-pressed="true"]{background:rgba(228,169,60,.14);color:var(--accent)}
+
+  main{position:relative;z-index:1;max-width:920px;margin:0 auto;padding:34px 22px 72px}
+  .pagehead{margin-bottom:18px}
+  .kicker{font-family:var(--font-mono);font-size:9px;letter-spacing:.16em;color:var(--accent);margin-bottom:7px}
+  h1{margin:0 0 9px;font-family:var(--font-display);font-size:34px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;line-height:1}
+  .lede{margin:0;max-width:680px;color:var(--muted);font-size:13.5px;line-height:1.65}
+
+  .panel{border:1px solid var(--border);background:var(--card);border-radius:var(--radius)}
+  .panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:14px 16px;border-bottom:1px solid var(--border);background:linear-gradient(180deg,#101315,#0E1012)}
+  .panel-head h2{margin:0 0 4px;font-family:var(--font-display);font-size:17px;font-weight:600;letter-spacing:.08em;text-transform:uppercase}
+  .panel-head .sub{font-family:var(--font-mono);font-size:8.5px;letter-spacing:.1em;color:var(--muted-2)}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid var(--border);background:#111417;border-radius:var(--radius);
+    font-family:var(--font-display);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--fg);white-space:nowrap}
+  .btn:hover{border-color:#3A4249;background:#161A1D}
+
+  .rows{display:flex;flex-direction:column}
+  .prow{display:grid;grid-template-columns:minmax(0,1fr) 92px 44px;gap:14px;align-items:center;padding:13px 16px;border-bottom:1px solid var(--border-soft)}
+  .prow:last-child{border-bottom:0}
+  .pinfo{min-width:0}
+  .pname{display:flex;align-items:center;flex-wrap:wrap;gap:7px;font-family:var(--font-display);font-size:15px;font-weight:600;letter-spacing:.04em}
+  .pcat,.ptag{font-family:var(--font-mono);font-size:8px;letter-spacing:.08em;font-weight:400;padding:2px 5px;border:1px solid var(--border);color:var(--muted-2)}
+  .ptag.core{color:var(--accent);border-color:rgba(228,169,60,.4);background:rgba(228,169,60,.07)}
+  .ptag.opt{color:var(--muted);border-color:var(--border)}
+  .pmeta{margin-top:4px;font-family:var(--font-mono);font-size:9.5px;letter-spacing:.03em;color:var(--muted-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pstat{display:flex;flex-direction:column;align-items:flex-end;gap:1px;font-family:var(--font-mono)}
+  .pstat b{font-size:15px;font-weight:500;line-height:1.1}
+  .pstat span{font-size:8px;letter-spacing:.08em;color:var(--muted-2)}
+  .pstat i{font-style:normal;font-size:8px;letter-spacing:.03em;color:var(--muted)}
+
+  .tgl{position:relative;width:38px;height:20px;border:1px solid var(--border);background:var(--inset);border-radius:2px;flex:none;padding:0}
+  .tgl::after{content:"";position:absolute;top:2px;left:3px;width:14px;height:14px;background:var(--muted-2);transition:.16s ease}
+  .tgl[aria-checked="true"]{border-color:rgba(228,169,60,.5);background:rgba(228,169,60,.12)}
+  .tgl[aria-checked="true"]::after{left:19px;background:var(--accent)}
+
+  .note{margin-top:14px;display:flex;flex-direction:column;gap:5px;font-family:var(--font-mono);font-size:9px;line-height:1.6;letter-spacing:.03em;color:var(--muted-2)}
+  footer{margin-top:34px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+    padding-top:16px;border-top:1px solid var(--border);font-family:var(--font-mono);font-size:9px;letter-spacing:.1em;color:var(--muted-2)}
+  footer a{color:var(--accent)}
+
+  .toast{position:fixed;z-index:60;bottom:24px;left:50%;transform:translate(-50%,20px);opacity:0;pointer-events:none;transition:.2s ease;
+    background:#111417;border:1px solid var(--border);border-left:2px solid var(--accent);padding:10px 16px;
+    font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;color:var(--fg);box-shadow:0 16px 40px rgba(0,0,0,.5)}
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+
+  @media (max-width:760px){
+    .topbar{padding:0 14px;gap:10px}
+    .nav{margin-left:4px;gap:0}
+    .nav a{padding:5px 7px;font-size:11px}
+    main{padding:24px 14px 48px}
+    h1{font-size:27px}
+    .panel-head{flex-direction:column;align-items:flex-start;gap:10px}
+    .prow{grid-template-columns:minmax(0,1fr) auto;row-gap:8px}
+    .pinfo{grid-column:1;grid-row:1}
+    .tgl{grid-column:2;grid-row:1}
+    .pstat{grid-column:1 / -1;grid-row:2;flex-direction:row;justify-content:flex-start;align-items:baseline;gap:8px}
+    .pmeta{white-space:normal}
+  }
+  @media (min-width:1024px){
+    body{zoom:1.25}
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="index.html">
+    <span class="mark" aria-hidden="true">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <path d="M7 .5 13.5 4v6L7 13.5.5 10V4L7 .5Z" stroke="#E4A93C" stroke-width="1"/>
+        <path d="M4 9V5l3 2.2L10 5v4" stroke="#EDEEEC" stroke-width="1"/>
+      </svg>
+    </span>
+    <span class="wordmark"><b data-i18n="brand.prts">PRTS</b><span data-i18n="brand.terminal">FORECAST TERMINAL</span></span>
+  </a>
+  <nav class="nav" aria-label="Primary">
+    <a href="forecast.html" data-i18n="nav.forecast">FORECAST</a>
+    <a href="roadmap.html" data-i18n="nav.roadmap">ROADMAP</a>
+    <a href="settings.html" aria-current="page" data-i18n="nav.settings">SETTINGS</a>
+  </nav>
+  <div class="top-right">
+    <div class="lang-switch" id="langSwitch" role="group" aria-label="Language">
+      <button type="button" data-lang="en" aria-pressed="true">EN</button>
+      <button type="button" data-lang="id" aria-pressed="false">ID</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="pagehead">
+    <div class="kicker" data-i18n="settings.kicker">SYSTEM · SETTINGS</div>
+    <h1 data-i18n="settings.title">SETTINGS</h1>
+    <p class="lede" data-i18n="settings.lede">Choose which pull-relevant shop packs may compete in the tier basket optimizer. Saved only in this browser.</p>
+  </div>
+
+  <section class="panel">
+    <div class="panel-head">
+      <div>
+        <h2 data-i18n="settings.packs">PULL VALUE PACKS</h2>
+        <div class="sub" data-i18n="settings.packsSub">TOGGLED ITEMS ENTER THE BEST-VALUE CONTEST AT EACH TIER CAP</div>
+      </div>
+      <button class="btn" type="button" id="resetBtn" data-i18n="settings.reset">RESET TO DEFAULTS</button>
+    </div>
+    <div class="rows" id="rows"></div>
+  </section>
+
+  <div class="note">
+    <span data-i18n="settings.pullsNote">Pull values assume 100% OP conversion.</span>
+    <span data-i18n="settings.localNote">Stored locally in this browser. Nothing is sent to a server.</span>
+    <span data-i18n="settings.nonPull">Non-pull packs (chips, LMD, EXP, E2 materials) are excluded from this page and never enter the pull basket.</span>
+  </div>
+
+  <footer>
+    <span>PRTS FORECAST · SETTINGS</span>
+    <a href="forecast.html" data-i18n="settings.back">BACK TO FORECAST</a>
+  </footer>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script src="product-catalog.js"></script>
+<script src="settings-store.js"></script>
+<script src="forecast-i18n.js"></script>
+<script src="settings.js"></script>
+</body>
+</html>
