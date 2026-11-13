@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>PRTS Forecast · Roadmap</title>
 <meta name="description" content="PRTS Forecast roadmap: banner-aware input, character upgrade calculator, centralized state.">
 <meta property="og:title" content="PRTS Forecast · Roadmap">
@@ -26,7 +26,7 @@
     --font-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
   }
   *{box-sizing:border-box}
-  body{margin:0;min-height:100vh;background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+  body{margin:0;min-height:100vh;background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
   .topbar{display:flex;align-items:center;justify-content:flex-start;gap:14px;padding:0 22px;height:52px;border-bottom:1px solid var(--border);background:rgba(9,10,11,.95);position:sticky;top:0;z-index:10;backdrop-filter:blur(6px)}
   .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--fg)}
   .mark{width:26px;height:26px;border:1px solid var(--border);display:grid;place-items:center;background:linear-gradient(160deg,#15181B,#0B0D0F)}
@@ -40,21 +40,21 @@
   .nav a[aria-current]::before{content:none}
   .lang-switch button[aria-pressed="true"]{color:var(--accent)}
   main{max-width:920px;margin:0 auto;padding:32px 22px 64px}
-  .kicker{font-family:var(--font-mono);font-size:9px;letter-spacing:.16em;color:var(--muted-2);margin-bottom:6px}
+  .kicker{font-family:var(--font-mono);font-size:10px;letter-spacing:.16em;color:var(--muted-2);margin-bottom:6px}
   h1{font-family:var(--font-display);font-size:30px;letter-spacing:.02em;margin:0 0 8px}
   .lede{color:var(--muted);max-width:640px;margin:0 0 28px}
   .stage{border:1px solid var(--border);background:var(--card);border-radius:var(--radius);padding:20px 22px;margin-bottom:14px;position:relative}
   .stage .num{position:absolute;top:16px;right:18px;font-family:var(--font-mono);font-size:10px;letter-spacing:.12em;color:var(--muted-2)}
   .stage h2{font-family:var(--font-display);font-size:17px;letter-spacing:.04em;margin:0 0 6px;display:flex;align-items:center;gap:10px}
-  .stage h2 .tag{font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;padding:2px 7px;border:1px solid var(--border);border-radius:2px;color:var(--muted)}
+  .stage h2 .tag{font-family:var(--font-mono);font-size:10px;letter-spacing:.12em;padding:2px 7px;border:1px solid var(--border);border-radius:2px;color:var(--muted)}
   .stage h2 .tag.now{color:var(--accent);border-color:var(--accent)}
   .stage h2 .tag.next{color:var(--success);border-color:var(--success)}
   .stage p{margin:0 0 10px;color:var(--muted)}
   .stage ul{margin:8px 0 0;padding-left:18px;color:var(--fg)}
   .stage ul li{margin-bottom:4px}
-  .stage .outcome{margin-top:10px;padding-top:10px;border-top:1px dashed var(--border-soft);font-family:var(--font-mono);font-size:9.5px;letter-spacing:.08em;color:var(--muted-2)}
-  footer{padding:24px 22px;border-top:1px solid var(--border);font-family:var(--font-mono);font-size:9px;letter-spacing:.1em;color:var(--muted-2);text-align:center}
-  a.back{display:inline-block;margin-top:24px;font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;color:var(--accent);text-decoration:none}
+  .stage .outcome{margin-top:10px;padding-top:10px;border-top:1px dashed var(--border-soft);font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;color:var(--muted-2)}
+  footer{padding:24px 22px;border-top:1px solid var(--border);font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;color:var(--muted-2);text-align:center}
+  a.back{display:inline-block;margin-top:24px;font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;color:var(--accent);text-decoration:none}
   a.back:hover{text-decoration:underline}
   @media (max-width:760px){
     header{padding:0 14px;gap:10px}
@@ -66,9 +66,13 @@
   @media (min-width:1024px){
     body{zoom:1.25}
   }
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
+<link rel="stylesheet" href="nav.css">
+<link rel="stylesheet" href="type.css">
 </head>
 <body>
+<a class="skip-link" href="#main">Skip to content</a>
 <header class="topbar">
   <a class="brand" href="index.html">
     <span class="mark" aria-hidden="true">
@@ -80,12 +84,18 @@
     <span class="wordmark"><b data-i18n="brand.prts">PRTS</b><span data-i18n="brand.terminal">FORECAST TERMINAL</span></span>
   </a>
   <nav class="nav" aria-label="Primary">
-    <a href="forecast.html" data-i18n="nav.forecast">FORECAST</a>
-    <a href="roadmap.html" aria-current="page" data-i18n="nav.roadmap">ROADMAP</a>
-    <a href="settings.html" data-i18n="nav.settings">SETTINGS</a>
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navMenu" aria-haspopup="true">
+      <span>MENU</span>
+      <svg viewBox="0 0 10 6" aria-hidden="true"><path d="M0 0h10L5 6z" fill="currentColor"/></svg>
+    </button>
+    <div class="nav-links" id="navMenu">
+      <a href="forecast.html" data-i18n="nav.forecast">FORECAST</a>
+      <a href="roadmap.html" aria-current="page" data-i18n="nav.roadmap">ROADMAP</a>
+      <a href="settings.html" data-i18n="nav.settings">SETTINGS</a>
+    </div>
   </nav>
 </header>
-<main>
+<main id="main">
   <div class="kicker">ROADMAP · PRODUCT DIRECTION</div>
   <h1>Where PRTS Forecast is going</h1>
   <p class="lede">A staged plan. Stage 1 is live. Each later stage reuses the same forecast core and only changes how input is collected or where state lives.</p>
@@ -143,5 +153,6 @@
 </main>
 <footer>PRTS FORECAST · ROADMAP · v0.1</footer>
 <script src="forecast-i18n.js"></script>
+<script src="nav.js"></script>
 </body>
 </html>

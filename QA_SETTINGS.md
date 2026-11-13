@@ -140,3 +140,7 @@ No inline explanatory subtitles should remain under archetype, spark, potential,
 | 7.3 | Desktop ≥1024px | 125% zoom, container ~920px, no horizontal scroll |
 | 7.4 | Mobile 390px | Zoom 1, no horizontal scroll on forecast/settings |
 | 7.5 | `docs/` | Mirrors `src/` (settings, catalog, store, i18n, forecast) |
+| 7.6 | Mobile nav | At ≤760px the horizontal links collapse into `MENU ▾` |
+| 7.7 | Nav dropdown | Tapping `MENU` opens FORECAST/ROADMAP/SETTINGS; current page highlighted; triangle flips |
+| 7.8 | Nav close | Outside click, Escape, or link click closes it; no horizontal scroll at 320px |
+| 7.9 | Desktop nav | At >760px the toggle is hidden and links stay inline |

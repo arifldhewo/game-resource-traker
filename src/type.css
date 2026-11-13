@@ -1,0 +1,4 @@
+h1,h2,h3{text-wrap:balance}
+p,.lede,.hint,.info-text,.info-analogy,.pmeta,.select-hint,.engine-note{text-wrap:pretty}
+.hstat b,.num b,.pity-cell b,.bd-total b,.bd-val,.pstat b,.range-val,.stat .v,.line b{font-variant-numeric:tabular-nums}
+body{-moz-osx-font-smoothing:grayscale}
