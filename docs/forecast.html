@@ -86,7 +86,7 @@
   .signin svg{flex:none}
 
   /* shell */
-  .shell{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 24px 96px}
+  .shell{position:relative;z-index:1;max-width:920px;margin:0 auto;padding:26px 24px 96px}
 
   /* stepper */
   .flow-head{margin-bottom:16px}
@@ -526,6 +526,9 @@
   .leviHead{font-size:10px}
   .leviHead b{font-size:12px}
   .leviReadout{font-size:10px}
+  @media (min-width:1024px){
+    body{zoom:1.25}
+  }
   @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -725,9 +728,7 @@
               <input type="range" id="fOPPct" min="0" max="100" step="5" value="100">
               <span class="range-val" id="fOPPctVal">100%</span>
             </div>
-            <div class="hint" data-i18n-html="step2.opHint"><b>100%</b> = all OP becomes pulls. Lower it if you save OP for skins or Sanity.</div>
           </div>
-          <div class="hint" style="margin-top:10px" data-i18n-html="step2.matrixNote">Matrix rows are <b>best-value baskets at each tier cap</b>. The optimizer buys Monthly Card → Monthly HH Pack → OP20 → OP6 → OP1, all normal (non-FT). Recurring items reset every 30 days.</div>
         </div>
       </section>
 

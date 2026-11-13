@@ -127,9 +127,6 @@
     "step2.pityHintIsolated": "This archetype uses an <b>isolated pity group</b> — the inherited counter is not applied.",
     "step2.opConversion": "OP conversion",
     "step2.opConversionLabel": "OP CONVERSION",
-    "step2.opConversionHint": "INVENTORY + BEST-VALUE BASKET",
-    "step2.opHint": "<b>100%</b> = all OP becomes pulls. Lower it if you save OP for skins or Sanity.",
-    "step2.matrixNote": "Matrix rows are <b>best-value baskets at each tier cap</b>. The optimizer buys Monthly Card → Monthly HH Pack → OP20 → OP6 → OP1, all normal (non-FT). Recurring items reset every 30 days.",
     "step2.engineNote": "Annihilation (1 800 ORU/wk) & monthly calendar resets are automatically assumed claimed. Income is deterministic only.",
 
     /* step 03 */
@@ -505,9 +502,6 @@
     "step2.pityHintIsolated": "Arketipe ini memakai <b>pity terisolasi</b> — counter warisan tidak dipakai.",
     "step2.opConversion": "Konversi OP",
     "step2.opConversionLabel": "KONVERSI OP",
-    "step2.opConversionHint": "INVENTARIS + KERANJANG TERMURAH",
-    "step2.opHint": "<b>100%</b> = semua OP jadi pull. Turunkan kalau kamu simpan OP untuk skin atau Sanity.",
-    "step2.matrixNote": "Baris matriks adalah <b>keranjang termurah di setiap batas tier</b>. Optimizer membeli Monthly Card → Monthly HH Pack → OP20 → OP6 → OP1, semua normal (bukan FT). Item berulang reset tiap 30 hari.",
     "step2.engineNote": "Annihilation (1.800 ORU/minggu) & reset kalender bulanan diasumsikan sudah diklaim. Income hanya deterministik.",
 
     "step3.mission": "03 · MATRIKS PRA-TERBANG",
