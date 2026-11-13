@@ -84,7 +84,23 @@
   check("30d card + starter → 0 recurring card cycles", both30.cardCycles === 0, both30.cardCycles, 0);
   check("30d card + starter → 14.8 total pulls", near(both30.totalPulls, 14.8), both30.totalPulls, 14.8);
 
-  // 3. UI wiring
+  // 3. Starter HH replaces up to 2 Monthly HH Pack cycles
+  var hh = byId("hh_pack");
+  var starterHH = byId("starter_hh");
+  var hh180 = windowFor([{ prod: hh, qty: 1 }], 180);
+  check("180d HH only → 6 cycles", hh180.hhCycles === 6, hh180.hhCycles, 6);
+  check("180d HH only → 135.6 pulls", near(hh180.totalPulls, 135.6), hh180.totalPulls, 135.6);
+
+  var hhStarter180 = windowFor([{ prod: hh, qty: 1 }, { prod: starterHH, qty: 1 }], 180);
+  check("180d HH + Starter HH → 4 recurring cycles", hhStarter180.hhCycles === 4, hhStarter180.hhCycles, 4);
+  check("180d HH + Starter HH → 90.4 recurring pulls", near(hhStarter180.hhPulls, 90.4), hhStarter180.hhPulls, 90.4);
+  check("180d HH + Starter HH → 110.4 total pulls", near(hhStarter180.totalPulls, 110.4), hhStarter180.totalPulls, 110.4);
+
+  var hhStarter30 = windowFor([{ prod: hh, qty: 1 }, { prod: starterHH, qty: 1 }], 30);
+  check("30d HH + Starter HH → 0 recurring cycles", hhStarter30.hhCycles === 0, hhStarter30.hhCycles, 0);
+  check("30d HH + Starter HH → 20 total pulls", near(hhStarter30.totalPulls, 20), hhStarter30.totalPulls, 20);
+
+  // 4. UI wiring
   check(
     "archetype info trigger exists",
     !!document.querySelector('[data-info="archetype"]'),

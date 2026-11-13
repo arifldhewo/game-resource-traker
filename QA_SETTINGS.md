@@ -12,12 +12,13 @@
 3. Open DevTools → Console.
 4. Paste the whole `qa/forecast-qa.js` file and press Enter.
 
-Expected: `PRTS QA: 18/18 passed` and all table rows PASS.
+Expected: `PRTS QA: 25/25 passed` and all table rows PASS.
 
 Covers:
 - 12 pull-relevant catalog items, no non-pull items.
 - starter defaults false.
 - Monthly Card + Starter Monthly stacking for 180 days and 30 days.
+- Starter HH decay against Monthly HH Pack for 180 days and 30 days.
 - info triggers, Outlook delta box, settings nav link.
 
 > The console test does not change saved settings or forecast inputs.
@@ -57,8 +58,15 @@ Use the console test for exact math. Manual UI check:
 | 2.2 | Console test `both180` | `cardCycles = 5`, `cardDays = 150`, `cardOP = 30`, total = 73.8 |
 | 2.3 | Console test `cardOnly180` | `cardCycles = 6`, total = 70.8 |
 | 2.4 | Console test `both30` | `cardCycles = 0`, total = 14.8 |
+| 2.5 | Console test `hh180` | Monthly HH only: 6 cycles, 135.6 pulls |
+| 2.6 | Console test `hhStarter180` | Starter HH replaces 2 cycles: 4 recurring cycles, 90.4 recurring pulls + 20 starter = 110.4 total |
+| 2.7 | Console test `hhStarter30` | Starter HH replaces the only cycle: 0 recurring cycles, 20 total pulls |
 
 Acceptance: a 6-month window must never produce 7 card months (`7 × 11.8 = 82.6` pulls). With both selected, card contribution stays at 6 months (70.8), plus the 3 HH permits from the starter pack.
+
+**HH trade-off note:** Monthly HH Pack also contains 42 OP. Starter HH only contains ten-rolls. Replacing 2 Monthly HH packs with 1 Starter HH saves money but removes 84 OP (25.2 pulls). The total therefore drops from 135.6 to 110.4. This is expected from the product-level substitution rule; it is not a regression.
+
+Because of that trade-off, the optimizer may still skip Starter HH on a 180-day window even when the toggle is ON. The decay mechanic is verified when the item is in the basket; whether it wins is decided by total pulls under the cap. Starter HH is competitive on short windows (e.g. 30 days).
 
 ---
 

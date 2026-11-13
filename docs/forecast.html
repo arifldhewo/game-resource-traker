@@ -1244,6 +1244,15 @@
         windowSpendCents -= Math.round(card.price * 100);
       }
 
+      // Starter HH contains 2 ten-rolls, so it replaces up to 2 Monthly HH
+      // Pack cycles instead of adding extra HH purchases on top.
+      var hasStarterHH = starters.some(function(p){ return p.id === "starter_hh"; });
+      if (hasStarterHH && useHH && hh){
+        var replacedHH = Math.min(2, months);
+        windowPulls -= replacedHH * productPulls(hh, opPct);
+        windowSpendCents -= replacedHH * Math.round(hh.price * 100);
+      }
+
       var cand = {
         items: items,
         pulls: recurringPulls + oneTimePulls,
@@ -1341,11 +1350,12 @@
     var cardPulls = (cardOrundum + cardOP * OP_ORUNDUM * factor) / PULL_COST;
 
     // Monthly HH Pack: 42 OP + 1 ten-roll, once per 30-day cycle.
-    var hhPulls = 0;
+    // Starter HH contains 2 ten-rolls, so it replaces up to 2 cycles.
     var hhProd = catalogById("hh_pack");
-    if (hhQty > 0 && hhProd){
-      hhPulls = hhQty * months * productPulls(hhProd, opPct);
-    }
+    var hasStarterHH = basket.items.some(function(x){ return x.prod.id === "starter_hh"; });
+    var hhReplaced = hhQty && hasStarterHH ? Math.min(2, months) : 0;
+    var hhCycles = hhQty ? Math.max(0, months - hhReplaced) : 0;
+    var hhPulls = hhCycles > 0 && hhProd ? hhCycles * productPulls(hhProd, opPct) : 0;
 
     // OP packs: unlimited, counted per cycle.
     var opPulls = 0;
@@ -1357,7 +1367,7 @@
 
     var cardProd = catalogById("monthly_card");
     var cardSpend = cardProd && cardQty ? cardProd.price * cardCycles / months : 0;
-    var hhSpend = hhProd ? hhQty * hhProd.price : 0;
+    var hhSpend = hhProd && hhQty ? hhProd.price * hhCycles / months : 0;
     var recurringSpend = cardSpend + hhSpend + opSpend;
 
     return {
@@ -1369,6 +1379,8 @@
       cardOP: cardOP,
       cardPulls: cardPulls,
       hhQty: hhQty,
+      hhCycles: hhCycles,
+      hhReplaced: hhReplaced,
       hhPulls: hhPulls,
       opQty: opQty,
       opSpend: opSpend,
@@ -1441,7 +1453,7 @@
       ];
       if (invOPPulls > 0) lines.push({ key:"invop", label:"INVENTORY OP · " + state.opPct + "%", meta: fmt(state.op) + " OP × 180 ORU ÷ 600", value:invOPPulls });
       if (bundle.cardQty > 0) lines.push({ key:"card", label:"MONTHLY CARD", meta: fmt(bundle.cardDays) + "d × 200 ORU + " + bundle.cardOP + " OP (" + bundle.cardPurchases + " renewal)", value:bundle.cardPulls });
-      if (bundle.hhPulls > 0) lines.push({ key:"packs", label:"MONTHLY HH PACK", meta: bundle.months + " cycle(s) × 1/30d · 42 OP + 1 ten-roll", value:bundle.hhPulls });
+      if (bundle.hhPulls > 0) lines.push({ key:"packs", label:"MONTHLY HH PACK", meta: bundle.hhCycles + " cycle(s) × 1/30d · 42 OP + 1 ten-roll", value:bundle.hhPulls });
       if (bundle.opPulls > 0) lines.push({ key:"op", label:"OP PACKS · " + state.opPct + "%", meta: "best-value fill · $" + bundle.opSpend.toFixed(2) + "/mo × " + bundle.months + " cycle(s)", value:bundle.opPulls });
       if (bundle.oneTimePulls > 0) lines.push({ key:"onetime", label:"STARTER PACKS · ONE-TIME", meta: bundle.oneTimeNames.join(" · ") + " · $" + bundle.oneTimeSpend.toFixed(2) + " once", value:bundle.oneTimePulls });
       lines.push({ key:"certs", label:"YELLOW CERTS", meta: fmt(state.certs) + " certs · " + (state.shop > 0 ? "HH Tier " + state.shop + " cleared" : "from HH Tier 1") + " (" + fmt(certResult.remaining) + " unspent)", value:certPulls });

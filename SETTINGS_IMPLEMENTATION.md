@@ -274,6 +274,8 @@ Non-pull (chips/LMD/EXP/E2 mats) tidak dimodelkan di Settings maupun basket.
 
 **Starter Monthly Pack** = one-time bundle berisi 3 HH permit + 1 Monthly Card 30 hari. Tetap `recurring:false`. Jika Monthly Card terpisah juga dibeli, card di bundle **menggantikan satu siklus card**, bukan menambah bulan ke-7: total card coverage di-cap ke panjang window (`cardCycles = months - 1`, `cardDays = days - 30`).
 
+**Starter Headhunting Pack** berisi 2 ten-roll, jadi ia **menggantikan sampai 2 siklus Monthly HH Pack** (`hhCycles = max(0, months - 2)`) ketika keduanya dipilih. Catatan penting: Monthly HH Pack juga berisi 42 OP, sedangkan Starter HH tidak. Substitusi ini menghemat uang tetapi menghilangkan OP dari 2 pack yang digantikan, sehingga total pull bisa turun. Ini konsekuensi dari model product-level, bukan bug.
+
 Ini perubahan penting di `computeBasketWindow()`: item `recurring:false` tidak boleh dikalikan `months`.
 
 ### 5.3 Algoritma kontestasi yang diusulkan
@@ -471,5 +473,6 @@ Kalau mau benar-benar paralel tanpa konflik, bagi per-file: Sesi A hanya membuat
 - `monthlySpend` = recurring spend; total pull tetap memasukkan one-time.
 - Non-pull pack tidak ada di catalog dan tidak pernah muncul di Settings.
 - Monthly Card di dalam `Starter Monthly Pack` boleh dibeli bersama card terpisah, tetapi **menggantikan satu siklus card**: total card coverage di-cap ke `months` (6 bulan tetap 6 card-months, bukan 7). `cardDays` dan `cardCycles` dikurangi satu.
+- Starter Headhunting Pack (2 ten-roll) menggantikan sampai 2 siklus Monthly HH Pack: `hhCycles = max(0, months - 2)`. Karena Monthly HH Pack juga berisi 42 OP, substitusi ini menurunkan total pull; QA case `hhStarter180` mendokumentasikan angka 110.4 vs 135.6.
 - Belum diimplementasikan: preview basket per tier, first-time OP bonus, import/export settings, input availability per pack.
 - Regression default: F2P 190, benchmark 212, GOLDFISH `HH PACK×1 · OP1×4`, WHALE `CARD×1 · HH PACK×1 · OP20×31 · OP1×4`.
