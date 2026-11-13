@@ -1235,6 +1235,15 @@
 
       var windowPulls = recurringPulls * months + oneTimePulls;
       var windowSpendCents = recurringSpendCents * months + oneTimeSpendCents;
+
+      // Starter Monthly already contains one Monthly Card. When both are
+      // selected, it replaces one card cycle instead of adding a 7th month.
+      var hasStarterMonthly = starters.some(function(p){ return p.id === "starter_monthly"; });
+      if (hasStarterMonthly && useCard && card){
+        windowPulls -= productPulls(card, opPct);
+        windowSpendCents -= Math.round(card.price * 100);
+      }
+
       var cand = {
         items: items,
         pulls: recurringPulls + oneTimePulls,
@@ -1321,9 +1330,14 @@
     });
 
     // Monthly Card: 200 ORU/day + 6 OP per 30-day renewal.
-    var cardPurchases = cardQty * months;
-    var cardOrundum = cardQty ? 200 * days : 0;
-    var cardOP = cardQty * months * 6;
+    // Starter Monthly already contains one card, so it replaces one cycle
+    // instead of stacking into an extra month outside the forecast window.
+    var hasStarterCard = basket.items.some(function(x){ return x.prod.id === "starter_monthly"; });
+    var cardDays = cardQty ? Math.max(0, days - (hasStarterCard ? CYCLE_DAYS : 0)) : 0;
+    var cardCycles = cardQty ? Math.max(0, months - (hasStarterCard ? 1 : 0)) : 0;
+    var cardPurchases = cardCycles;
+    var cardOrundum = 200 * cardDays;
+    var cardOP = cardCycles * 6;
     var cardPulls = (cardOrundum + cardOP * OP_ORUNDUM * factor) / PULL_COST;
 
     // Monthly HH Pack: 42 OP + 1 ten-roll, once per 30-day cycle.
@@ -1342,13 +1356,15 @@
     });
 
     var cardProd = catalogById("monthly_card");
-    var cardSpend = cardProd ? cardQty * cardProd.price : 0;
+    var cardSpend = cardProd && cardQty ? cardProd.price * cardCycles / months : 0;
     var hhSpend = hhProd ? hhQty * hhProd.price : 0;
     var recurringSpend = cardSpend + hhSpend + opSpend;
 
     return {
       months: months,
       cardQty: cardQty,
+      cardDays: cardDays,
+      cardCycles: cardCycles,
       cardPurchases: cardPurchases,
       cardOP: cardOP,
       cardPulls: cardPulls,
@@ -1424,7 +1440,7 @@
         { key:"inventory",label:"INVENTORY ORUNDUM + TICKETS",  meta: fmt(invOrundum) + " ORU + " + invTickets + " permits", value:inventoryPulls }
       ];
       if (invOPPulls > 0) lines.push({ key:"invop", label:"INVENTORY OP · " + state.opPct + "%", meta: fmt(state.op) + " OP × 180 ORU ÷ 600", value:invOPPulls });
-      if (bundle.cardQty > 0) lines.push({ key:"card", label:"MONTHLY CARD", meta: fmt(cal.days) + "d × 200 ORU + " + bundle.cardOP + " OP (" + bundle.cardPurchases + " renewal)", value:bundle.cardPulls });
+      if (bundle.cardQty > 0) lines.push({ key:"card", label:"MONTHLY CARD", meta: fmt(bundle.cardDays) + "d × 200 ORU + " + bundle.cardOP + " OP (" + bundle.cardPurchases + " renewal)", value:bundle.cardPulls });
       if (bundle.hhPulls > 0) lines.push({ key:"packs", label:"MONTHLY HH PACK", meta: bundle.months + " cycle(s) × 1/30d · 42 OP + 1 ten-roll", value:bundle.hhPulls });
       if (bundle.opPulls > 0) lines.push({ key:"op", label:"OP PACKS · " + state.opPct + "%", meta: "best-value fill · $" + bundle.opSpend.toFixed(2) + "/mo × " + bundle.months + " cycle(s)", value:bundle.opPulls });
       if (bundle.oneTimePulls > 0) lines.push({ key:"onetime", label:"STARTER PACKS · ONE-TIME", meta: bundle.oneTimeNames.join(" · ") + " · $" + bundle.oneTimeSpend.toFixed(2) + " once", value:bundle.oneTimePulls });

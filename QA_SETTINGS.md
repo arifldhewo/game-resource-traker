@@ -1,0 +1,134 @@
+# QA — Settings, Basket Eligibility, Tier Deltas
+
+**Scope:** Settings page, shared catalog, starter/monthly-card stacking, Outlook tier deltas, PULLS badge, info sheets, responsive/zoom.
+**Status:** manual checklist + browser console test.
+
+---
+
+## 0. Quick automated test
+
+1. Serve `src/` (e.g. `python3 -m http.server 8080` from `src/`).
+2. Open `forecast.html` in a fresh profile/incognito.
+3. Open DevTools → Console.
+4. Paste the whole `qa/forecast-qa.js` file and press Enter.
+
+Expected: `PRTS QA: 18/18 passed` and all table rows PASS.
+
+Covers:
+- 12 pull-relevant catalog items, no non-pull items.
+- starter defaults false.
+- Monthly Card + Starter Monthly stacking for 180 days and 30 days.
+- info triggers, Outlook delta box, settings nav link.
+
+> The console test does not change saved settings or forecast inputs.
+
+---
+
+## 1. Settings page
+
+Open `settings.html`.
+
+| # | Check | Expected |
+|---|---|---|
+| 1.1 | Rows | 12 rows |
+| 1.2 | Default ON | `monthly_card`, `hh_pack`, `op20`, `op6`, `op1` |
+| 1.3 | Default OFF | `op40`, `op66`, `op130`, `starter_pack`, `starter_monthly`, `starter_sync`, `starter_hh` |
+| 1.4 | Badges | Core items marked `CORE`; optional marked `OPTIONAL` |
+| 1.5 | Values @100% OP | Monthly Card 11.8; Starter Monthly 14.8; Starter Sync 4; Starter Pack 1; Starter HH 20; OP20 6 |
+| 1.6 | Toggle | Clicking a switch updates immediately and shows `SETTINGS SAVED · LOCAL` |
+| 1.7 | Persistence | Reload page; toggle state must stay |
+| 1.8 | Reset | `RESET TO DEFAULTS` returns 1.2/1.3 |
+| 1.9 | Language | EN/ID switch translates headings, badges, limits, notes |
+| 1.10 | Mobile | 390px: no horizontal scroll; toggle and stats remain visible |
+
+Storage key: `fv3.settings`.
+
+---
+
+## 2. Stacking: Starter Monthly + Monthly Card
+
+Rule: **Starter Monthly already contains 1 Monthly Card.** When both are selected, the starter replaces one card cycle; total card coverage must be capped at the forecast window.
+
+Use the console test for exact math. Manual UI check:
+
+| # | Steps | Expected |
+|---|---|---|
+| 2.1 | Enable `starter_monthly`; end date = today + 30 days; inspect DOLPHIN | Basket includes `STARTER MO`; **no** separate `MONTHLY CARD` line; one-time line 14.8 |
+| 2.2 | Console test `both180` | `cardCycles = 5`, `cardDays = 150`, `cardOP = 30`, total = 73.8 |
+| 2.3 | Console test `cardOnly180` | `cardCycles = 6`, total = 70.8 |
+| 2.4 | Console test `both30` | `cardCycles = 0`, total = 14.8 |
+
+Acceptance: a 6-month window must never produce 7 card months (`7 × 11.8 = 82.6` pulls). With both selected, card contribution stays at 6 months (70.8), plus the 3 HH permits from the starter pack.
+
+---
+
+## 3. Forecast default regression
+
+Use a fresh profile (no `fv3.state`, no `fv3.settings`) or reset both.
+
+| # | Check | Expected |
+|---|---|---|
+| 3.1 | F2P total | 190 pulls |
+| 3.2 | Benchmark | 212 |
+| 3.3 | GOLDFISH basket | `HH PACK×1 · OP1×4` |
+| 3.4 | WHALE basket | `CARD×1 · HH PACK×1 · OP20×31 · OP1×4` |
+
+> Exact tier totals depend on today's date. Compare before/after on the same date.
+
+---
+
+## 4. PULLS mode badge
+
+1. Step 01 → `TARGET PULLS` → set 600.
+2. Open Step 03.
+
+| Tier | Expected badge |
+|---|---|
+| F2P | DEFICIT |
+| MINNOW | DEFICIT |
+| GOLDFISH | DEFICIT |
+| DOLPHIN | DEFICIT |
+| WHALE | GUARANTEED |
+| LEVIATHAN | GUARANTEED |
+
+Matrix badge: `2 OF 6 REACH TARGET`.
+
+Regression: a tier short of 600 must never show GUARANTEED.
+
+---
+
+## 5. Outlook tier delta
+
+1. Step 04 → inspect `GOLDFISH`.
+2. Compare with `MINNOW`.
+
+| # | Check | Expected |
+|---|---|---|
+| 5.1 | Delta box | `Δ VS MINNOW` + total pulls + pulls/mo + $/mo |
+| 5.2 | Changed rows | HH Pack and OP filler highlighted with positive badges |
+| 5.3 | Removed row | Monthly Card shown struck-through with negative badge |
+| 5.4 | F2P | `BASE TIER` box, no changed rows |
+
+---
+
+## 6. Bottom-sheet info
+
+| Trigger | Expected title |
+|---|---|
+| Banner archetype info | `BANNER ARCHETYPE` |
+| Inventory header info | `INCOME ASSUMPTIONS` |
+| Leviathan panel info | `CUSTOM OP PACKS` |
+
+No inline explanatory subtitles should remain under archetype, spark, potential, P(target), pity, income, or Leviathan.
+
+---
+
+## 7. Navigation & responsive
+
+| # | Check | Expected |
+|---|---|---|
+| 7.1 | Nav links | `FORECAST`, `ROADMAP`, `SETTINGS` on all pages |
+| 7.2 | Active nav | Current page highlighted |
+| 7.3 | Desktop ≥1024px | 125% zoom, container ~920px, no horizontal scroll |
+| 7.4 | Mobile 390px | Zoom 1, no horizontal scroll on forecast/settings |
+| 7.5 | `docs/` | Mirrors `src/` (settings, catalog, store, i18n, forecast) |
