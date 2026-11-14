@@ -5,6 +5,12 @@ Versions follow semver and every push to `master` gets a version bump and a tag.
 
 ## [Unreleased]
 
+## [0.4.4] - 2026-11-14
+
+### Changed
+
+- Add .gitignore for .commandcode/ and .qa-tmp/; untrack local Command Code artifacts.
+
 ## [0.4.3] - 2026-11-14
 
 ### Changed
