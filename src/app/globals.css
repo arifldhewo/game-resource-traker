@@ -1,0 +1,108 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg: #090a0b;
+  --color-card: #0e1012;
+  --color-card-2: #111417;
+  --color-inset: #0a0c0e;
+  --color-line: #23272b;
+  --color-line-soft: #191d20;
+  --color-fg: #edeEec;
+  --color-muted: #878d93;
+  --color-muted-2: #7d858c;
+  --color-accent: #e4a93c;
+  --color-success: #4cb782;
+  --color-danger: #e5533d;
+  --color-amber: #c79a4e;
+
+  --radius-prts: 4px;
+
+  --font-body: var(--font-inter), system-ui, -apple-system, sans-serif;
+  --font-display: var(--font-rajdhani), "Inter", sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, SFMono-Regular, Menlo,
+    monospace;
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    color-scheme: dark;
+    -webkit-tap-highlight-color: rgba(228, 169, 60, 0.16);
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--color-bg);
+    color: var(--color-fg);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-weight: 600;
+  }
+
+  a,
+  button {
+    touch-action: manipulation;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  ::selection {
+    background: rgba(228, 169, 60, 0.3);
+  }
+
+  @media (min-width: 1024px) {
+    body {
+      zoom: 1.25;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
+}
+
+@layer components {
+  .skip-link {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    z-index: 100;
+    padding: 10px 14px;
+    background: var(--color-card);
+    border: 1px solid var(--color-accent);
+    color: var(--color-fg);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+  }
+
+  .skip-link:focus {
+    left: 14px;
+    top: 14px;
+  }
+
+  #main {
+    scroll-margin-top: 64px;
+  }
+}

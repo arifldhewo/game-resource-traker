@@ -1,9 +1,18 @@
 # Changelog
 
 All notable changes to PRTS Forecast are documented here.
-Versions follow semver and every push to `master` gets a version bump and a tag.
+Versions follow semver and deploys run only from `v*` tags or GitHub Releases, not from `master` pushes.
 
 ## [Unreleased]
+
+### Changed
+
+- Migrate landing, forecast, roadmap, and settings to Next.js 15 (App Router), TypeScript, and Tailwind CSS v4.
+- Extract the forecast engine into pure TS modules with Vitest parity tests.
+- Move the product catalog, archetypes, tiers, and EN/ID dictionaries into typed JSON files.
+- Replace the docs mirror deploy with a GitHub Pages Actions workflow.
+- Deploy to Pages only from `v*` tags/releases; `master` pushes no longer trigger a release.
+- Match legacy typography (heading weights, sizes, and mono label usage) after Tailwind preflight.
 
 ## [0.4.5] - 2026-11-14
 

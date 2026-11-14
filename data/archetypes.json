@@ -1,0 +1,52 @@
+{
+  "LIMITED": {
+    "name": "LIMITED",
+    "rateUp": 0.7,
+    "isolated": true,
+    "spark": 300,
+    "guaranteeAt": null,
+    "freePulls": 24,
+    "freePullsLabel": "1 free 10-pull + 14 daily free pulls",
+    "desc": "Spark at 300 · isolated pity · 1 free 10-pull + 14 daily pulls"
+  },
+  "EVENT": {
+    "name": "EVENT",
+    "rateUp": 0.5,
+    "isolated": false,
+    "spark": null,
+    "guaranteeAt": 150,
+    "freePulls": 0,
+    "freePullsLabel": null,
+    "desc": "150-pull rate-up guarantee · shared pity"
+  },
+  "STANDARD": {
+    "name": "STANDARD",
+    "rateUp": 0.5,
+    "isolated": false,
+    "spark": null,
+    "guaranteeAt": null,
+    "freePulls": 0,
+    "freePullsLabel": null,
+    "desc": "No hard pity · shared pity group"
+  },
+  "CROSSOVER": {
+    "name": "CROSSOVER",
+    "rateUp": 1.0,
+    "isolated": true,
+    "spark": 120,
+    "guaranteeAt": null,
+    "freePulls": 10,
+    "freePullsLabel": "1 free 10-pull ticket",
+    "desc": "Spark at 120 · isolated pity · 100% rate-up · 1 free 10-pull"
+  },
+  "KERNEL": {
+    "name": "KERNEL",
+    "rateUp": 0.5,
+    "isolated": false,
+    "spark": null,
+    "guaranteeAt": null,
+    "freePulls": 0,
+    "freePullsLabel": null,
+    "desc": "No hard pity · kernel pity group"
+  }
+}

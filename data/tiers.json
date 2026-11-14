@@ -1,0 +1,8 @@
+[
+  { "key": "F2P", "name": "F2P", "rule": "$0/mo · NATURAL ONLY", "color": "#7C848C", "cap": 0 },
+  { "key": "MINNOW", "name": "MINNOW", "rule": "$0–$4.99/mo", "color": "#B0BEC9", "cap": 4.99 },
+  { "key": "GOLDFISH", "name": "GOLDFISH", "rule": "$5–$29.99/mo", "color": "#5E8FA8", "cap": 29.99 },
+  { "key": "DOLPHIN", "name": "DOLPHIN", "rule": "$30–$99.99/mo", "color": "#5AA6C4", "cap": 99.99 },
+  { "key": "WHALE", "name": "WHALE", "rule": "$100–$499.99/mo", "color": "#E4A93C", "cap": 499.99 },
+  { "key": "LEVIATHAN", "name": "LEVIATHAN", "rule": "$500+/mo · CUSTOM OP", "color": "#D9713F", "cap": 500 }
+]
