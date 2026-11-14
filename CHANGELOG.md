@@ -5,6 +5,12 @@ Versions follow semver and every push to `master` gets a version bump and a tag.
 
 ## [Unreleased]
 
+## [0.4.3] - 2026-11-14
+
+### Changed
+
+- Use package.json version as the single source of truth; remove version.json.
+
 ## [0.4.2] - 2026-11-14
 
 ### Changed

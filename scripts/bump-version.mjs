@@ -3,7 +3,6 @@ import path from "node:path";
 import { spawnSync } from "node:child_process";
 
 const root = process.cwd();
-const versionFile = path.join(root, "version.json");
 const packageFile = path.join(root, "package.json");
 const runtimeFile = path.join(root, "src", "version.js");
 const changelogFile = path.join(root, "CHANGELOG.md");
@@ -49,7 +48,8 @@ function compareVersions(a, b) {
   return 0;
 }
 
-const current = JSON.parse(fs.readFileSync(versionFile, "utf8")).version;
+const pkg = JSON.parse(fs.readFileSync(packageFile, "utf8"));
+const current = pkg.version;
 parseVersion(current);
 const next = nextVersion(current, kind);
 parseVersion(next);
@@ -67,10 +67,8 @@ const runtime = `(function(){
 })();
 `;
 
-fs.writeFileSync(versionFile, JSON.stringify({ version: next }, null, 2) + "\n");
 fs.writeFileSync(runtimeFile, runtime);
 
-const pkg = JSON.parse(fs.readFileSync(packageFile, "utf8"));
 pkg.version = next;
 fs.writeFileSync(packageFile, JSON.stringify(pkg, null, 2) + "\n");
 

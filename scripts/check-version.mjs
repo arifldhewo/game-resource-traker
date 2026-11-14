@@ -18,14 +18,12 @@ function expect(condition, message) {
   if (!condition) problems.push(message);
 }
 
-const version = JSON.parse(read("version.json")).version;
-const pkgVersion = JSON.parse(read("package.json")).version;
+const version = JSON.parse(read("package.json")).version;
 const runtimeMatch = /var v = "([^"]+)"/.exec(read("src/version.js"));
 const runtimeVersion = runtimeMatch ? runtimeMatch[1] : "(not found)";
 
-expect(/^\d+\.\d+\.\d+$/.test(version), "version.json is not a valid semver: " + version);
-expect(pkgVersion === version, "package.json version " + pkgVersion + " != version.json " + version);
-expect(runtimeVersion === version, "src/version.js version " + runtimeVersion + " != version.json " + version);
+expect(/^\d+\.\d+\.\d+$/.test(version), "package.json is not a valid semver: " + version);
+expect(runtimeVersion === version, "src/version.js version " + runtimeVersion + " != package.json " + version);
 expect(read("CHANGELOG.md").includes("## [" + version + "]"), "CHANGELOG.md has no entry for " + version);
 
 if (fs.existsSync(path.join(root, "docs", "version.js"))) {
