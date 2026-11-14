@@ -741,10 +741,10 @@
               <div class="control"><input type="number" id="fCerts" min="0" step="1" value="180"><span class="unit" data-i18n="unit.cert">CERT</span></div>
             </div>
             <div class="field">
-              <label for="fShop"><span data-i18n="step2.shop">SHOP HEADHUNT TIER</span> <i data-i18n="step2.shopSub">(YELLOW CERTS)</i><button class="info-trigger" type="button" data-info="certs" aria-label="Detail yellow certs"></button></label>
+              <label for="fShop"><span data-i18n="step2.shop">SHOP HEADHUNT PHASE</span> <i data-i18n="step2.shopSub">(YELLOW CERTS)</i><button class="info-trigger" type="button" data-info="certs" aria-label="Detail yellow certs"></button></label>
               <select class="control" id="fShop">
-                <option value="0" data-i18n="step2.shopTier0">TIER 0</option><option value="1" data-i18n="step2.shopTier1">TIER 1</option><option value="2" selected data-i18n="step2.shopTier2">TIER 2</option>
-                <option value="3" data-i18n="step2.shopTier3">TIER 3</option><option value="4" data-i18n="step2.shopTier4">TIER 4</option><option value="5" data-i18n="step2.shopTier5">TIER 5</option>
+                <option value="0" data-i18n="step2.shopTier0">PHASE 0</option><option value="1" data-i18n="step2.shopTier1">PHASE 1</option><option value="2" selected data-i18n="step2.shopTier2">PHASE 2</option>
+                <option value="3" data-i18n="step2.shopTier3">PHASE 3</option><option value="4" data-i18n="step2.shopTier4">PHASE 4</option><option value="5" data-i18n="step2.shopTier5">PHASE 5</option>
               </select>
             </div>
           </div>
@@ -1480,7 +1480,7 @@
       if (bundle.hhPulls > 0) lines.push({ key:"packs", label:"MONTHLY HH PACK", meta: bundle.hhCycles + " cycle(s) × 1/30d · 42 OP + 1 ten-roll", value:bundle.hhPulls });
       if (bundle.opPulls > 0) lines.push({ key:"op", label:"OP PACKS · " + state.opPct + "%", meta: "best-value fill · $" + bundle.opSpend.toFixed(2) + "/mo × " + bundle.months + " cycle(s)", value:bundle.opPulls });
       if (bundle.oneTimePulls > 0) lines.push({ key:"onetime", label:"STARTER PACKS · ONE-TIME", meta: bundle.oneTimeNames.join(" · ") + " · $" + bundle.oneTimeSpend.toFixed(2) + " once", value:bundle.oneTimePulls });
-      lines.push({ key:"certs", label:"YELLOW CERTS", meta: fmt(state.certs) + " certs · " + (state.shop > 0 ? "HH Tier " + state.shop + " cleared" : "from HH Tier 1") + " (" + fmt(certResult.remaining) + " unspent)", value:certPulls });
+      lines.push({ key:"certs", label:"YELLOW CERTS", meta: fmt(state.certs) + " certs · " + (state.shop > 0 ? "HH Phase " + state.shop + " cleared" : "from HH Phase 1") + " (" + fmt(certResult.remaining) + " unspent)", value:certPulls });
       if (archetypeBonus > 0) lines.push({ key:"arch", label:"ARCHETYPE BONUS", meta: arch.freePullsLabel || "free pulls", value:archetypeBonus });
 
       var total = Math.floor(lines.reduce(function(a, l){ return a + l.value; }, 0));
@@ -2249,12 +2249,12 @@
     },
     "certs": {
       kicker: "FIELD · YELLOW CERTS",
-      title: "YELLOW CERTS + SHOP HEADHUNT TIER",
+      title: "YELLOW CERTS + SHOP HEADHUNT PHASE",
       analogy: "Tukar poin: 10 cert = 1 pull, 18 = 2 pull, 40 = 5, 70 = 10, 120 = 20.",
-      body: "<p>Yellow cert ditukar jadi pull lewat shop. Shop punya tangga harga: tier bawah murah, tier atas mahal.</p>" +
-            "<p><b>SHOP HEADHUNT TIER</b> = tier headhunt yang sudah kamu beli bulan ini, jadi dilewati.</p>" +
+      body: "<p>Yellow cert ditukar jadi pull lewat shop. Shop punya tangga harga: phase bawah murah, phase atas mahal.</p>" +
+            "<p><b>SHOP HEADHUNT PHASE</b> = phase headhunt yang sudah kamu beli bulan ini, jadi dilewati.</p>" +
             "<p>Sisa cert bisa dipakai lagi di bulan berikutnya. Model ini <b>tidak</b> menambah income cert baru.</p>",
-      example: "180 cert, HH Tier 2 cleared → 21 pull, sisa 14 cert.",
+      example: "180 cert, HH Phase 2 cleared → 21 pull, sisa 14 cert.",
       impact: "Total pull, badge.",
     },
     "op-pct": {

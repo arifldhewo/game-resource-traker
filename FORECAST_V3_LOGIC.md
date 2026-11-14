@@ -491,8 +491,8 @@ Semua input disimpan di objek `state` dan dirender ulang lewat `render()`.
 
 **Cara kerja.** `calcYellowCertPulls(certs, shop, futureMonths)`:
 
-1. **Bulan berjalan:** mulai dari tier yang belum dibersihkan (`shop`), beli selama saldo cukup.
-2. **Bulan-bulan berikutnya:** setiap reset, ulangi dari Tier 1 dengan **saldo yang sama** (stok dibelanjakan lintas reset, bukan income baru).
+1. **Bulan berjalan:** mulai dari phase yang belum dibersihkan (`shop`), beli selama saldo cukup.
+2. **Bulan-bulan berikutnya:** setiap reset, ulangi dari Phase 1 dengan **saldo yang sama** (stok dibelanjakan lintas reset, bukan income baru).
 3. Sisa cert dilaporkan sebagai `remaining` (tidak dipakai).
 
 **Nyambung ke.** `RES-06`, total pull, breakdown “YELLOW CERTS”.
@@ -501,7 +501,7 @@ Semua input disimpan di objek `state` dan dirender ulang lewat `render()`.
 
 ---
 
-#### RES-06 · Shop Tier Cleared (`#fShop`)
+#### RES-06 · Shop Phase Cleared (`#fShop`)
 
 | | |
 |---|---|
@@ -509,13 +509,13 @@ Semua input disimpan di objek `state` dan dirender ulang lewat `render()`.
 | Default | 2 |
 | State | `state.shop` |
 
-**Kenapa ada.** User yang sudah membersihkan tier bawah tidak bisa membelinya lagi bulan ini. Tanpa ini, pull dari cert akan diovercount.
+**Kenapa ada.** User yang sudah membersihkan phase bawah tidak bisa membelinya lagi bulan ini. Tanpa ini, pull dari cert akan diovercount.
 
-**Cara kerja.** Menjadi **index awal** loop pembelian cert bulan berjalan. `0` = mulai dari Tier 1; `2` = Tier 1–2 dilewati, mulai Tier 3.
+**Cara kerja.** Menjadi **index awal** loop pembelian cert bulan berjalan. `0` = mulai dari Phase 1; `2` = Phase 1–2 dilewati, mulai Phase 3.
 
 **Nyambung ke.** `RES-05`.
 
-**Catatan.** Untuk bulan-bulan berikutnya, loop selalu mulai dari Tier 1 (reset).
+**Catatan.** Untuk bulan-bulan berikutnya, loop selalu mulai dari Phase 1 (reset).
 
 ---
 
@@ -654,7 +654,7 @@ Baris = input, kolom = output. `●` = pengaruh langsung, `○` = tidak langsung
 | RES-03 HH 1× | ● | ● | ● | ● | ● | ○ | ● |
 | RES-04 HH 10× | ● | ● | ● | ● | ● | ○ | ● |
 | RES-05 certs | ● | ● | ● | ● | ● | ○ | ● |
-| RES-06 shop tier | ● | ● | ● | ● | ● | ○ | ● |
+| RES-06 shop phase | ● | ● | ● | ● | ● | ○ | ● |
 | RES-07 pity | ○ | — | ● | ● | ● | — | ● |
 | RES-08 OP % | ● | ● | ● | ● | ● | ○ | ● |
 | RES-09 Levi packs | — | ● (LEVI only) | ● (LEVI only) | ● (LEVI only) | ● (LEVI only) | ● (LEVI only) | ● |

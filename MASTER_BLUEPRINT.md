@@ -666,7 +666,7 @@ export class GameEvent {
 * **Header Bar:** Logo PRTS Terminal, Status Koneksi Neural Link (AI Active/Inactive), Tombol Google SSO / User Avatar Profile.
 * **Kolom Kiri (Input Controls - Collapsible Cards):**
   1. *Target Mission:* Dropdown Banner Archetype, Date Picker (Target Horizon), Toggle Target Mode (Target Pulls vs Target Potential 1-6). Pada Potential mode, tampilkan **Current Potential** (default 0) di kiri **Target Potential** dalam satu baris, lalu Target Availability, P(TARGET│6★), dan confidence selector.
-  2. *Current Inventory Snapshot:* Orundum, Originite Prime, Tiket 1x, Tiket 10x, Yellow Certs, Shop Tier Cleared (0-5), dan Dynamic Pity Input.
+  2. *Current Inventory Snapshot:* Orundum, Originite Prime, Tiket 1x, Tiket 10x, Yellow Certs, Shop Phase Cleared (0-5), dan Dynamic Pity Input.
   3. *Tactical Route Parameters:* Toggle Monthly Card, Jumlah Paket Headhunting, Persentase Konversi OP (0-100%), Annihilation clear level (max 1800), rincian pembelian OP Pack, serta status eligibility reward bulan berjalan (Monthly Login dan Green Cert shop). Default UI bersifat konservatif: reward bulan berjalan tidak dicentang.
 * **Kolom Kanan (PRTS Display Monitor):**
   1. *Pre-flight Matrix:* Grid 6 Marine Tiers (F2P, MINNOW, GOLDFISH, DOLPHIN, WHALE, LEVIATHAN) dengan status badge `GUARANTEED` / `FEASIBLE` / `LIKELY` / `DEFICIT`, total proyeksi pull, dan sisa hari.
