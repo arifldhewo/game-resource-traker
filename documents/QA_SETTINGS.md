@@ -1,27 +1,23 @@
 # QA — Settings, Basket Eligibility, Tier Deltas
 
 **Scope:** Settings page, shared catalog, starter/monthly-card stacking, Outlook tier deltas, PULLS badge, info sheets, responsive/zoom.
-**Status:** manual checklist + browser console test.
+**Status:** manual checklist + automated unit tests.
 
 ---
 
-## 0. Quick automated test
+## 0. Automated tests
 
-1. Serve `src/` (e.g. `python3 -m http.server 8080` from `src/`).
-2. Open `forecast.html` in a fresh profile/incognito.
-3. Open DevTools → Console.
-4. Paste the whole `qa/forecast-qa.js` file and press Enter.
+Run the unit suite:
 
-Expected: `PRTS QA: 25/25 passed` and all table rows PASS.
+```sh
+npm test
+```
 
 Covers:
-- 12 pull-relevant catalog items, no non-pull items.
-- starter defaults false.
-- Monthly Card + Starter Monthly stacking for 180 days and 30 days.
-- Starter HH decay against Monthly HH Pack for 180 days and 30 days.
-- info triggers, Outlook delta box, settings nav link.
+- `tests/engine/basket.test.ts` — 12 pull-relevant catalog items, no non-pull items, starter defaults false, Monthly Card + Starter Monthly stacking for 180 days and 30 days, Starter HH decay against Monthly HH Pack for 180 days and 30 days.
+- `tests/store/settings.test.ts` — `defaultSettings()` covers the catalog, disables every starter pack, and keeps catalog defaults for non-starter products.
 
-> The console test does not change saved settings or forecast inputs.
+The remaining tables in this document are manual UI checks and are not automated.
 
 ---
 
@@ -50,17 +46,17 @@ Storage key: `fv3.settings`.
 
 Rule: **Starter Monthly already contains 1 Monthly Card.** When both are selected, the starter replaces one card cycle; total card coverage must be capped at the forecast window.
 
-Use the console test for exact math. Manual UI check:
+Use the unit tests for exact math. Manual UI check:
 
 | # | Steps | Expected |
 |---|---|---|
 | 2.1 | Enable `starter_monthly`; end date = today + 30 days; inspect DOLPHIN | Basket includes `STARTER MO`; **no** separate `MONTHLY CARD` line; one-time line 14.8 |
-| 2.2 | Console test `both180` | `cardCycles = 5`, `cardDays = 150`, `cardOP = 30`, total = 73.8 |
-| 2.3 | Console test `cardOnly180` | `cardCycles = 6`, total = 70.8 |
-| 2.4 | Console test `both30` | `cardCycles = 0`, total = 14.8 |
-| 2.5 | Console test `hh180` | Monthly HH only: 6 cycles, 135.6 pulls |
-| 2.6 | Console test `hhStarter180` | Starter HH replaces 2 cycles: 4 recurring cycles, 90.4 recurring pulls + 20 starter = 110.4 total |
-| 2.7 | Console test `hhStarter30` | Starter HH replaces the only cycle: 0 recurring cycles, 20 total pulls |
+| 2.2 | Unit test `Monthly Card + Starter Monthly › 180d card + starter` | `cardCycles = 5`, `cardDays = 150`, `cardOP = 30`, total = 73.8 |
+| 2.3 | Unit test `Monthly Card + Starter Monthly › 180d card only` | `cardCycles = 6`, total = 70.8 |
+| 2.4 | Unit test `Monthly Card + Starter Monthly › 30d card + starter` | `cardCycles = 0`, total = 14.8 |
+| 2.5 | Unit test `Starter HH vs Monthly HH Pack › 180d HH only` | Monthly HH only: 6 cycles, 135.6 pulls |
+| 2.6 | Unit test `Starter HH vs Monthly HH Pack › 180d HH + Starter HH` | Starter HH replaces 2 cycles: 4 recurring cycles, 90.4 recurring pulls + 20 starter = 110.4 total |
+| 2.7 | Unit test `Starter HH vs Monthly HH Pack › 30d HH + Starter HH` | Starter HH replaces the only cycle: 0 recurring cycles, 20 total pulls |
 
 Acceptance: a 6-month window must never produce 7 card months (`7 × 11.8 = 82.6` pulls). With both selected, card contribution stays at 6 months (70.8), plus the 3 HH permits from the starter pack.
 

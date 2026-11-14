@@ -13,6 +13,7 @@ Versions follow semver and deploys run only from `v*` tags or GitHub Releases, n
 - Replace the docs mirror deploy with a GitHub Pages Actions workflow.
 - Deploy to Pages only from `v*` tags/releases; `master` pushes no longer trigger a release.
 - Match legacy typography (heading weights, sizes, and mono label usage) after Tailwind preflight.
+- Replace the legacy browser QA script with Vitest unit tests for the catalog and settings defaults.
 
 ## [0.4.5] - 2026-11-14
 

@@ -1,6 +1,10 @@
 .commandcode/
 .qa-tmp/
 
+# Environment
+.env
+.env*.local
+
 # Next.js
 node_modules/
 .next/

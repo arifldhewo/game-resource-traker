@@ -13,7 +13,6 @@ const eslintConfig = [
     ignores: [
       "legacy/**",
       "proto/**",
-      "qa/**",
       ".qa-tmp/**",
       ".next/**",
       "out/**",
