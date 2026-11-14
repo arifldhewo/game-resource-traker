@@ -1,0 +1,10 @@
+{
+  "name": "prts-forecast",
+  "version": "0.4.2",
+  "private": true,
+  "scripts": {
+    "bump": "node scripts/bump-version.mjs",
+    "sync": "node scripts/sync-docs.mjs",
+    "check": "node scripts/check-version.mjs"
+  }
+}
