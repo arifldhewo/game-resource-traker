@@ -1,5 +1,5 @@
 (function(){
-  var v = "0.4.4";
+  var v = "0.4.5";
   window.PRTS_VERSION = v;
   function paint(){
     var nodes = document.querySelectorAll("[data-app-version]");

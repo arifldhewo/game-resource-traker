@@ -5,6 +5,12 @@ Versions follow semver and every push to `master` gets a version bump and a tag.
 
 ## [Unreleased]
 
+## [0.4.5] - 2026-11-14
+
+### Changed
+
+- Cap the mobile info bottom sheet at 70dvh and make its body scrollable.
+
 ## [0.4.4] - 2026-11-14
 
 ### Changed
